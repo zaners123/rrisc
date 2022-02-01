@@ -1,5 +1,7 @@
 import re
 
+from pathlib import Path
+
 
 class Action:
     actionName = None
@@ -20,8 +22,8 @@ class Action:
         "0xB":   0xB,
         "jmp":   0xC,
         "jnz":   0xD,
-        "lb":    0xE,
-        "sb":    0xF,
+        "wb":    0xE,
+        "rb":    0xF,
     }
 
     def __init__(self):
@@ -29,7 +31,7 @@ class Action:
 
     @staticmethod
     def parse_action(line: str, argmax=16):
-        actionfinder = re.compile(r'^([A-Za-z]+)\s*#?R?((?:-|0x|0b)?[0-9A-Fa-f]+)?$')
+        actionfinder = re.compile(r'^([A-Za-z0-9]+)\s*#?R?((?:-|0x|0b)?[0-9A-Fa-f]+)?$')
         match = re.match(actionfinder, line)
         if not match:
             return None
@@ -77,15 +79,16 @@ class Label:
 class Assembler:
     program = None
     pc = 0
+    labels = {}
 
     def process_action(self, action):
-        # print(f"{action.actionName}@{self.pc} -> {hex(action.toByte())}")
+        print(f"{action.actionName}@{self.pc} -> {hex(action.toByte())}")
         self.program[self.pc] = action.toByte()
         self.pc = self.pc + 1
         pass
 
     def process_label(self, label):
-        pass
+        self.labels[label.name] = self.pc
 
     def process_line(self, line: str):
         action = Action.parse_action(line)
@@ -95,12 +98,19 @@ class Assembler:
         if label:
             self.process_label(label)
 
-    def unwrap_line(self, line: str):
+    def unwrap_line(self, line: str, pc: int):
+        jmptolabel = re.compile(r'^(jnz|jmp|jer|jlt)\s([A-Za-z0-9_]+)$')
+        match = re.match(jmptolabel, line)
+        if match:
+
+            label = self.labels.get(match.group(2)) or 0
+            return ["andi 0", f"addi {(label/4096)%16}", f"lsli 4", f"addi {(label/256)%16}", "mov R15",
+                    "andi 0", f"addi {(label/16  )%16}", f"lsli 4", f"addi {(label    )%16}", "mov R14",
+                    f"{match.group(1).lower()}"]
+
         action = Action.parse_action(line, 256)
         if not action:
             return [line]
-        if action.actionName == "sri":
-            pass
         if action.actionName == "clr":
             return ["andi 0"]
         if action.actionName == "nop":
@@ -109,52 +119,61 @@ class Assembler:
             return [f"lsli {-action.arg}"]
         if action.actionName == "set":
             return ["andi 0", f"add {action.arg}"]
+        if action.actionName == "seti8":
+            return ["andi 0", f"addi {action.arg/16}", "lsli 4", f"addi {action.arg%16}"]
+        if action.actionName == "subi":
+            return [f"addi {-action.arg}"]
+
         return [line]
 
     def __init__(self, filename, memory):
         self.program = bytearray(memory)
-        with open(filename, 'r') as file:
+        with open("Assembler/"+filename, 'r') as file:
             filedata = file.read()
             lines = filedata.split('\n')
 
             print("PHASE 0")
             # Strip comments
-            line_i = 0
-            while line_i < len(lines):
+            self.pc = 0
+            while self.pc < len(lines):
                 # Strip Whitespace
-                lines[line_i] = lines[line_i].strip()
+                lines[self.pc] = lines[self.pc].strip()
                 # Strip Comments
-                comment_index = max(lines[line_i].find("//"), lines[line_i].find(";"))
+                comment_index = max(lines[self.pc].find("//"), lines[self.pc].find(";"))
                 if comment_index != -1:
-                    lines[line_i] = lines[line_i][:comment_index]
+                    lines[self.pc] = lines[self.pc][:comment_index]
                 # Remove Empty Lines
-                if lines[line_i] == '':
-                    del lines[line_i]
+                if lines[self.pc] == '':
+                    del lines[self.pc]
                     continue
-                line_i = line_i+1
+                self.pc = self.pc+1
             print("PHASE0 DONE")
             # print(lines)
 
             print("PHASE 1")
-            line_i = 0
+            self.pc = 0
             newlines = []
-            while line_i < len(lines):
-                # print(lines)
-                toAdd = self.unwrap_line(lines[line_i])
+            while self.pc < len(lines):
+                toAdd = self.unwrap_line(lines[self.pc], self.pc)
                 for line in toAdd:
                     newlines.append(line)
-                line_i = line_i + 1
+                self.pc = self.pc + 1
             lines = newlines
             print("PHASE1 DONE")
             print(lines)
 
             print("PHASE 2")
+            self.pc = 0
             for line in lines:
                 self.process_line(line)
 
             progHex = self.program.hex()
+
+            for label in self.labels.keys():
+                print(f"{label} -> {self.labels[label]}")
+
             print(progHex)
-            with open("/home/bean/"+filename+".hex", 'w') as out:
+            with open(f"{Path.home()}/{filename}.hex", 'w') as out:
                 out.write("v3.0 hex bytes plain big-endian\r")
                 out.write(progHex)
                 out.flush()
@@ -162,4 +181,4 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    s = Assembler("code.asm", 32)
+    s = Assembler("code.asm", 64)
