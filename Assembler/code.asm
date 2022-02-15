@@ -1,51 +1,24 @@
 ; For RRISC
 start:
+    rb 0000; Equals 0xE0
     addi 5
-    addi 20
-    subi 25
+    set R5 ; R5=F5
+    addi 3
+    addi 5
+    sub R5
+    subi 8
     nop
     nop
     nop
-    jmp start
-    addi 1
-    addi 1
-    set R13
-    wb
-    addi 1
-    addi 1
-    addi 1
-    rb
-    addi 1
-    addi 1
-    addi 1
-    jmp start
-
-
-
-maintwo:
-    addi 1
-    addi 1
-    addi 1
-    addi 1
-main:
-    addi 1
-    addi 1
-    addi 1
-    addi 1
-    ; Increment PC
-    ; set R15
-    ; addi 1
-    ; mov R15
-    ; Done inc PC
-end:
-    jmp far
-string:
-    .asciiz "ABCDEFG"
-stack:
-    .buffer 500
-far:
     nop
     nop
-    addi 1
-    andi 5
-    jmp main
+    nop
+    addi 15
+loop:
+    subi 1
+    jez loop
+    nop
+    nop
+    nop
+    nop
+    nop

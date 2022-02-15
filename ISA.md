@@ -110,22 +110,22 @@ else:
 ### jif (0xD) - Jump If Flags
 ```
 jump = switch(imm) {
-    0: always (JAL)
-    1: acc != 0 (JNZ)
-    2: acc[MSB] == 1 (acc negative) (JNEG)
-    3: acc < R[memio]
-    4: acc == R[memio]
-    5: acc > R[memio]
-    6: TODO
-    7: TODO
-    8: never
-    9: acc == 0 (JEZ)
-    A: acc[MSB] == 0 (acc positive) (JPOS) 
-    B: acc >= R[memio]
-    C: acc != R[memio]
-    D: acc >= R[memio]
-    E: TODO
-    F: TODO
+    0: JAL - always
+    1: JNO - never
+    2: JNZ - acc != 0
+    3: JEZ - acc == 0
+    4: JLZ - acc[MSB] == 1 (acc negative)
+    5: JGZ - acc[MSB] == 0 (acc positive) 
+    6: JLT - acc < R[memio]
+    7: JGE - acc >= R[memio]
+    8: JEQ - acc == R[memio]
+    9: JNE - acc != R[memio]
+    A: JGT - acc > R[memio]
+    B: JLE - acc <= R[memio]
+    C: JOD - acc%2 == 1
+    D: JEV - acc%2 == 0
+    E: ?
+    F: ?
 }
 if jump:
     PC = RMEM
