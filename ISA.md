@@ -9,22 +9,23 @@ This is the accumulator register, and nearly every operation involves it somehow
 ### R1-R13: General Purpose Regsiters
 
 ### R14-R15: Memory Register
+- R0    = acc
+- R1-R9 = general-purpose registers
+- R11   = RAT - Assembler Temporary (since nearly every instruction touches the ALU, used for push,jmp,etc)
+- R12   = RSH (StackRegister High, most significant 8 bits)
+- R13   = RSL (StackRegister Low, least significant 8 bits)
+- R14   = RMH (Memory High, most  significant 8 bits)
+- R15   = RML (Memory Low , least significant 8 bits)
 
-Every address in memory is 16-bits long, but the registers are 8-bits long. Because of this, two registers are used:
-- R11 = RMEMIO (Data from/to memory)
-- R12 = SRH (StackRegister High, most significant 8 bits)
-- R13 = SRL (StackRegister Low, least significant 8 bits)
-- R14 = MEMH(Memory High, most  significant 8 bits)
-- R15 = MEML(Memory Low , least significant 8 bits)
+RSTK = {RSH,RSL} = {R12,R13}
+RMEM = {RMH,RML} = {R14,R15}
+RSRC = Source (aka input aka read-from)
+RDST = Destination (aka output aka write-to)
 
-RSR  = {SRH,SRL}   = {R12,R13}
-RMEM = {MEMH,MEML} = {R14,R15}
-
-To jump, you set these registers, then call "jmp"
-
-To read memory, you set these registers, put something in acc, then call "rb"
-
-To write memory, you set these registers, put something in acc, then call "wb"
+## Examples:
+- To jump, you set RMEM registers, then call a variant of jmp
+- To read memory, you set RMEM, then call "rb {RSRC}"
+- To write memory, you set RMEM then call "wb {RDST}"
 
 # Instruction Format
 All instructions are, in hardware, a single byte. A 4-bit opcode, followed by a 4-bit number, imm.

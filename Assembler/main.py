@@ -1,9 +1,11 @@
 import re
+import sys
 
 from pathlib import Path
 
 jumpToOpcode = {
     "jal": 0x0,
+    "jmp": 0x0,
     "jno": 0x1,
     "jnz": 0x2,
     "jez": 0x3,
@@ -40,6 +42,17 @@ actionNameToOpcode = {
     "wb":    0xF,
 }
 
+registers = {
+    "acc":  0x0,
+    "rat":  0xB,
+    "rsh":  0xC,
+    "rsl":  0xD,
+    "rmh":  0xE,
+    "rml":  0xF,
+}
+
+labelRegex = r'(?:[0-9]*[A-Za-z_]+[0-9]*)+'
+
 
 class Action:
 
@@ -75,13 +88,22 @@ class Action:
             ret.bytes = bytearray(int(match.group(1)))
             return ret
 
+        # Parse register mnemonics
+        registerfinder = re.compile(r'^(.*)('+('|'.join(str(x) for x in registers.keys()))+')$', re.IGNORECASE)
+        match = re.match(registerfinder, line)
+        if match:
+            line = match.group(1)+str(registers[match.group(2).lower()])
+        # Parse actual action
         actionfinder = re.compile(r'^([A-Za-z0-9]+)\s*#?R?((?:-|0x|0b)?[0-9A-Fa-f]+)?$')
         match = re.match(actionfinder, line)
         if not match:
             return None
         ret = Action()
         ret.actionName = match.group(1).lower()
-        if match.group(2):
+        if ret.actionName in jumpToOpcode.keys():
+            ret.arg = jumpToOpcode[ret.actionName]
+            ret.actionName = "jmp"
+        elif match.group(2):
             if match.group(2).startswith("0b"):
                 ret.arg = int(match.group(2)[2:], 2)
             elif match.group(2).startswith("0x"):
@@ -115,7 +137,7 @@ class Label:
 
     @staticmethod
     def parse_label(line: str):
-        labelfinder = re.compile(r'^([A-Za-z_0-9]+):$')
+        labelfinder = re.compile(r'^('+labelRegex+'):$')
         match = re.match(labelfinder, line)
         if not match:
             return None
@@ -138,13 +160,25 @@ class Assembler:
         self.labels[label.name] = self.pc
 
     def unwrap_line(self, line: str):
-        jmptolabel = re.compile(r'^(j[a-z]{2})\s([A-Za-z0-9_]+)$')
-        match = re.match(jmptolabel, line)
+        # set mem register from label
+        match = re.match(re.compile(r'^(setml)\s('+labelRegex+')$'), line)
         if match:
             label = self.labels.get(match.group(2)) or 0
-            return ["sub R0", f"addi {int(label/4096)%16}", f"andi 0xF", f"addi {int(label/256)%16}", "set R15",
-                    "sub R0", f"addi {int(label/16  )%16}", f"andi 0xF", f"addi {int(label    )%16}", "set R14",
-                    f"jmp {jumpToOpcode[match.group(1)]}"]
+            return ["set RAT",
+                    "sub acc", f"addi {int(label/4096)%16}", f"andi 0xF", f"addi {int(label/256)%16}", "set RMH",
+                    "sub acc", f"addi {int(label/16  )%16}", f"andi 0xF", f"addi {int(label    )%16}", "set RML",
+                    "get RAT"]
+        match = re.match(re.compile(r'^(setsl)\s('+labelRegex+')$'), line)
+        if match:
+            label = self.labels.get(match.group(2)) or 0
+            return ["set RAT",
+                    "sub acc", f"addi {int(label/4096)%16}", f"andi 0xF", f"addi {int(label/256)%16}", "set RSH",
+                    "sub acc", f"addi {int(label/16  )%16}", f"andi 0xF", f"addi {int(label    )%16}", "set RSL",
+                    "get RAT"]
+        # Jmp to register
+        match = re.match(re.compile(r'^(j[a-z]{2})\s('+labelRegex+')$'), line)
+        if match:
+            return [f"setsl {match.group(2)}", f"jmp {jumpToOpcode[match.group(1)]}"]
 
         action = Action.parse_action(line, 256)
         if not action:
@@ -153,10 +187,12 @@ class Assembler:
             return ["sub R0"]
         if action.actionName == "nop":
             return ["addi 0"]
-        # if action.actionName == "lsri":
-        #     return [f"lsli {-action.arg}"]
-        # if action.actionName == "geti8":
-        #     return ["andi 0", f"addi {action.arg/16}", "lsli 4", f"addi {action.arg%16}"]
+        if action.actionName == "push":
+            return ["set RAT",
+                    "get RSL", "addi 1", "set RML", "get RSH", "?", "set RMH", "wb RAT", "add RSL",
+                    "get RAT"]
+        if action.actionName == "pop":
+            return ["rb RAT", "get RMH", "subi 1", "set RSH", "get RML", "?", "set RML", "get RAT"]
         return [line]
 
     def lines_strip_comments(self, lines):
@@ -176,15 +212,20 @@ class Assembler:
         return lines
 
     def lines_unwrap(self, lines):
-        self.pc = 0
-        oldpc = 0
-        newlines = []
-        while oldpc < len(lines):
-            toAdd = self.unwrap_line(lines[oldpc])
-            for line in toAdd:
-                newlines.append(line)
-                self.pc = self.pc + 1
-            oldpc += 1
+        while True:
+            newlines = []
+            self.pc = 0
+            oldpc = 0
+            while oldpc < len(lines):
+                toAdd = self.unwrap_line(lines[oldpc])
+                for line in toAdd:
+                    newlines.append(line)
+                    self.pc = self.pc + 1
+                oldpc += 1
+            if newlines == lines:
+                break
+            lines = newlines
+            print(lines)
         return newlines
 
     def lines_process_labels(self, lines):
@@ -225,10 +266,16 @@ class Assembler:
                 if action:
                     self.process_action(action)
                     self.pc = self.pc + len(action.to_bytes())
+                elif not Label.parse_label(line):
+                    print(f"UNKNOWN LINE {line}", file=sys.stderr)
 
             print("PHASE 5 - Make Hex")
             prog_hex = self.program.hex()
+
+            numbytes =len(self.program)
             print(prog_hex)
+            print(str(numbytes) + "/65536 = " + str(round(numbytes/655.360, 3)) + "%")
+
             with open(f"{Path.home()}/{filename}.hex", 'w') as out:
                 out.write("v3.0 hex bytes plain big-endian\r")
                 out.write(prog_hex)
