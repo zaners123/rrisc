@@ -38,7 +38,6 @@ If imm is hexadecimal, it will be converted.
 
 R[imm] = Register at imm (R0 = acc)
 
-
 # Hardware-Implemented Instructions
 
 These all take exactly one controller-cycle-per-instruction.
@@ -46,69 +45,79 @@ These all take exactly one controller-cycle-per-instruction.
 These ends up being around 4 clock cycles, since it uses somewhat of an IF,ID,EX,WB pipeline.
 
 ### (0x0) addi - Add Immediate 
-```acc = acc + imm```
+```
+acc = acc + imm
+flag-add = true
+flag-carry = true if a carry occurred
+```
 ### (0x1) add - Add Register 
-```acc = acc + R[imm]```
+```
+acc = acc + R[imm]
+flag-add = true
+flag-carry = true if a carry occurred
+```
+### subi (0x2) - subtract immediate
+```
+acc = acc - imm
+flag-add = false
+flag-carry = true if a carry (aka borrow) occurred
+```
+### sub (0x3) - subtract
+```
+acc = acc - R[imm]
+flag-add = false
+flag-carry = true if a carry (aka borrow) occurred
+```
 ### (0x2) andi - And Immediate 
-```acc = acc & imm```
+```
+acc = acc & imm
+acc[3:0] <-> acc[7:4]
+```
 Note that since imm is only 4 bits, it wipes the most-significant 4-bits
 ### (0x3) and - And Register
 ```acc = acc & R[imm]```
-### (0x4) swei - Swap Eor Immediate
-```acc[3:0] <-> acc[7:4]^imm```
-Useful for:
- - Turning most other operations into their inverses
- - Turning a 4bit operation into an 8-bit operation
-   - EX: and by 0x53
+### (0x4) swei - Eor Immediate
 ```
-andi 0x5
-swei 0x0
-andi 0x3
-``` 
- - A NEG:
+acc[3:0] = acc[3:0]^imm
+acc[3:0] <-> acc[7:4]
 ```
-swei 0xF
-swei 0xF
+### eori (0x5) - eor immediate
+```acc = acc^R[imm]```
+### set (0x6) - set register
+```R[imm] = acc```
+### get (0x7) - get register
+```acc = R[imm]```
+### ori (0xA) - logical or immediate
 ```
- - SUBTRACTION (acc = R3 - R2)
+acc = acc or imm
+acc[3:0] <-> acc[7:4]
 ```
-set_acc_to_R2:
-    andi 0x0
-    swei 0x0
-    andi 0x0
-    add R2
-invert acc:
-    swei 0xF
-    swei 0xF
-    addi 1
-add_R3:
-    add R3
+### or (0xB) - logical or
+```acc = acc or R[imm]```
+### sif (0xC) - Skip If
 ```
-### (0x5) shft - Shift (Logical/Arithmetic/Rotate)
+skip = condition (see jmp conditions)
+if skip:
+    PC = PC+8 instead of PC+4
 ```
-IF IMMEDIATE-BASED SHIFT HARDWARE CHOSEN:
-left = imm[3]
-if left:
-    acc = acc << imm
+### rwc (0xC) - Repeat with carry
+```
+if flag-add:
+    acc = acc + R[imm] + flag-carry
 else:
-    acc = acc >> imm
-IF REGISTER-BASED SHIFT HARDWARE CHOSEN:
-left = R[imm][7]
-optional: rot = R[imm][6]
-optional: arithmetic = R[imm][5]
-if left:
-    acc = acc << R[imm][3:0]
-else:
-    acc = acc >> R[imm][3:0]
+    acc = acc - R[imm] - flag-carry 
 ```
-### set (0x6)
-### get (0x7)
-### subi (0x8)
-### sub (0x9)
-### ori (0xA)
-### or (0xB)
-### ? (0xC)
-### jif (0xD) - Jump If Flags
+Calling add/sub/adc always updates the carry flag to if there was a carry.
+Possible ADC inputs could be:
+- No inputs, carryflag and add/subtract flag.
+  - Would be better off at least using R[imm] as input
+- A register (acc = acc + R[imm] + carryflag)
+  - Would require carryflag and add/subtract flag.
+  - Turns into either ADC or SBC
+- An upper register and carryflag direction (acc = acc + R[imm[3:1]] + carryflag*(-1^R[imm[0]]))
+
+- This could be done by having a "skip next instruction if" which would have the same effect and take a similar amount of hardware, but would be much more expandable (halts, simpler conditionals, etc)
+### jif (0xD) - Jump If
 ```
 jump = switch(imm) {
     0: JAL - always
@@ -132,33 +141,19 @@ if jump:
     PC = RMEM
 ```
 ### rb (0xE) Read Byte from memory
-```
-R[imm] = mem[addr]
-```
+```R[imm] = mem[addr]```
 ### wb (0xF) Write Byte to memory
-```
-mem[addr] = R[imm]
-```
+```mem[addr] = R[imm]```
 Keep in mind to set both memory registers, as mentioned above.
-# Potential Master Instructions
-- SUB / SUBI
-- SWP-OR
-
-- SWP-NOR (unnecessarily similar to or/nor)
-- SWP-NAND (unnecessarily similar to and/nand)
 
 # Alias Instructions
-
-### lsri - Logical Shift Right Immediate
-```acc = acc >> imm```
-This takes one tick and is equivalent to lsli (-i)"
 
 ### push - Push
 ```MEM[SR++] = acc```
 
 ```
 ; Put acc in memio
-set RMEMIO
+set RAT
 ; Increment RSRL
 get RSRL
 addi 1
@@ -174,7 +169,7 @@ Pushes the immediate value onto the nibble at the memory address the stack is at
 Then increments the stack pointer. (If SRL is FFFF: SRL=0; SRH++)
 ### pop - Pop
 ```acc = MEM[SR--]```
-
-
-### subi - Subtract Immediate
-```acc = acc - imm```
+Problem: Push/Pop require a 16-bit add, but the computer only has 8 bit. This could be solved by using the carry, but how?
+ - Dedicated Carry instruction: This would be over the top
+ - Add is always add with carry: When/How does it know to specify when to add the carry?
+   - "addi 0" uses and removes the carry bit could work, but would require at least 5 chips
