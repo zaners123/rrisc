@@ -9,9 +9,10 @@ This is the accumulator register, and nearly every operation involves it somehow
 ### R1-R13: General Purpose Regsiters
 
 ### R14-R15: Memory Register
-- R0    = acc
+- R0    = RAC - Accumulator. Output register for nearly every operation (unchanged in j, s, wb, set)
 - R1-R9 = general-purpose registers
-- R11   = RAT - Assembler Temporary (since nearly every instruction touches the ALU, used for push,jmp,etc)
+- R10   = RAT - Assembler Temporary (since nearly every instruction touches the ALU, used for push,jmp,etc)
+- R11   = RCM = CMP - Compare. Used by jlt, sgt, jeq, jne, etc.
 - R12   = RSH (StackRegister High, most significant 8 bits)
 - R13   = RSL (StackRegister Low, least significant 8 bits)
 - R14   = RMH (Memory High, most  significant 8 bits)
@@ -76,7 +77,7 @@ acc[3:0] <-> acc[7:4]
 Note that since imm is only 4 bits, it wipes the most-significant 4-bits
 ### (0x3) and - And Register
 ```acc = acc & R[imm]```
-### (0x4) swei - Eor Immediate
+### (0x4) eor - Eor Immediate
 ```
 acc[3:0] = acc[3:0]^imm
 acc[3:0] <-> acc[7:4]
@@ -94,30 +95,14 @@ acc[3:0] <-> acc[7:4]
 ```
 ### or (0xB) - logical or
 ```acc = acc or R[imm]```
-### sif (0xC) - Skip If
+### sif (0xC, 0b1100) - Skip If
 ```
 skip = condition (see jmp conditions)
 if skip:
     PC = PC+8 instead of PC+4
 ```
-### rwc (0xC) - Repeat with carry
-```
-if flag-add:
-    acc = acc + R[imm] + flag-carry
-else:
-    acc = acc - R[imm] - flag-carry 
-```
-Calling add/sub/adc always updates the carry flag to if there was a carry.
-Possible ADC inputs could be:
-- No inputs, carryflag and add/subtract flag.
-  - Would be better off at least using R[imm] as input
-- A register (acc = acc + R[imm] + carryflag)
-  - Would require carryflag and add/subtract flag.
-  - Turns into either ADC or SBC
-- An upper register and carryflag direction (acc = acc + R[imm[3:1]] + carryflag*(-1^R[imm[0]]))
-
-- This could be done by having a "skip next instruction if" which would have the same effect and take a similar amount of hardware, but would be much more expandable (halts, simpler conditionals, etc)
-### jif (0xD) - Jump If
+Will likely be added to make all instructions conditional (such as origz being ori )
+### jif (0xD, 0b1101) - Jump If
 ```
 jump = switch(imm) {
     0: JAL - always
@@ -134,15 +119,15 @@ jump = switch(imm) {
     B: JLE - acc <= R[memio]
     C: JOD - acc%2 == 1
     D: JEV - acc%2 == 0
-    E: ?
-    F: ?
+    E: JCT - carry flag true
+    F: JCF - carry flag false
 }
 if jump:
     PC = RMEM
 ```
-### rb (0xE) Read Byte from memory
+### rb (0xE, 0b1110) Read Byte from memory
 ```R[imm] = mem[addr]```
-### wb (0xF) Write Byte to memory
+### wb (0xF, 0b1111) Write Byte to memory
 ```mem[addr] = R[imm]```
 Keep in mind to set both memory registers, as mentioned above.
 

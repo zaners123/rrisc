@@ -3,24 +3,24 @@ import sys
 
 from pathlib import Path
 
-jumpToOpcode = {
-    "jal": 0x0,
-    "jmp": 0x0,
-    "jno": 0x1,
-    "jnz": 0x2,
-    "jez": 0x3,
-    "jlz": 0x4,
-    "jgz": 0x5,
-    "jlt": 0x6,
-    "jge": 0x7,
-    "jeq": 0x8,
-    "jne": 0x9,
-    "jgt": 0xA,
-    "jle": 0xB,
-    "jod": 0xC,
-    "jev": 0xD,
-    "0xE": 0xE,
-    "0xF": 0xF,
+conditionalOpcode = {
+    "al": 0x0,
+    "mp": 0x0,
+    "no": 0x1,
+    "nz": 0x2,
+    "ez": 0x3,
+    "lz": 0x4,
+    "gz": 0x5,
+    "lt": 0x6,
+    "ge": 0x7,
+    "eq": 0x8,
+    "ne": 0x9,
+    "gt": 0xA,
+    "le": 0xB,
+    "od": 0xC,
+    "ev": 0xD,
+    "ct": 0xE,
+    "cf": 0xF,
 }
 
 actionNameToOpcode = {
@@ -36,26 +36,56 @@ actionNameToOpcode = {
     "or":    0x9,
     "xori":  0xA,
     "xor":   0xB,
-    "roll":  0xC,
-    "jmp":   0xD,
+    "s":     0xC,
+    "j":     0xD,
     "rb":    0xE,
     "wb":    0xF,
 }
 
 registers = {
     "acc":  0x0,
-    "rat":  0xB,
+    "rac":  0x0,
+    "r0":   0x0,
+    "r1":   0x1,
+    "r2":   0x2,
+    "r3":   0x3,
+    "r4":   0x4,
+    "r5":   0x5,
+    "r6":   0x6,
+    "r7":   0x7,
+    "r8":   0x8,
+    "r9":   0x9,
+    "rat":  0xA,
+    "r10":  0xA,
+    "ra":   0xA,
+    "cmp":  0xB,
+    "rcm":  0xB,
+    "r11":  0xB,
+    "rb":   0xB,
     "rsh":  0xC,
+    "r12":  0xC,
+    "rc":   0xC,
     "rsl":  0xD,
+    "r13":  0xD,
+    "rd":   0xD,
     "rmh":  0xE,
+    "r14":  0xE,
+    "re":   0xE,
     "rml":  0xF,
+    "r15":  0xF,
+    "rf":   0xF,
 }
 
+conditionalRegex = ('|'.join(str(x) for x in conditionalOpcode.keys()))
+actionnameRegex = ('|'.join(str(x) for x in actionNameToOpcode.keys()))
+registerregex = ('|'.join(str(x) for x in registers.keys()))
 labelRegex = r'(?:[0-9]*[A-Za-z_]+[0-9]*)+'
+regexjmpreg = r'^(j(?:' + conditionalRegex + '))\s(' + labelRegex + ')$'
+
+labels = {}
 
 
 class Action:
-
     actionName = None
     arg = None
     bytes = None
@@ -88,36 +118,41 @@ class Action:
             ret.bytes = bytearray(int(match.group(1)))
             return ret
 
-        # Parse register mnemonics
-        registerfinder = re.compile(r'^(.*)('+('|'.join(str(x) for x in registers.keys()))+')$', re.IGNORECASE)
-        match = re.match(registerfinder, line)
-        if match:
-            line = match.group(1)+str(registers[match.group(2).lower()])
         # Parse actual action
-        actionfinder = re.compile(r'^([A-Za-z0-9]+)\s*#?R?((?:-|0x|0b)?[0-9A-Fa-f]+)?$')
+        actionfinder = re.compile(r'^([A-Za-z0-9]+)(?:\s+?(-?[A-Za-z0-9]*))?$')
         match = re.match(actionfinder, line)
         if not match:
             return None
         ret = Action()
         ret.actionName = match.group(1).lower()
-        if ret.actionName in jumpToOpcode.keys():
-            ret.arg = jumpToOpcode[ret.actionName]
-            ret.actionName = "jmp"
-        elif match.group(2):
-            if match.group(2).startswith("0b"):
-                ret.arg = int(match.group(2)[2:], 2)
-            elif match.group(2).startswith("0x"):
-                ret.arg = int(match.group(2)[2:], 16)
-            else:
-                ret.arg = int(match.group(2), 10)
-                if ret.arg < 0:
-                    ret.arg += argmax
-                    if ret.arg < 0:
-                        raise Exception("Argument was too negative")
-            if ret.arg >= argmax:
-                raise Exception(f"Argument {ret.arg} out of bounds for line {line}")
+        if not match.group(2):
+            return ret
+        arg = match.group(2)
+        negative = arg.startswith("-")
+        if negative:
+            arg = arg[1:]
+        if arg.startswith("0b"):
+            ret.arg = int(arg[2:], 2)
+        elif arg.startswith("0x"):
+            ret.arg = int(arg[2:], 16)
         else:
-            ret.arg = 0
+            try:
+                ret.arg = int(arg, 10)
+            except ValueError:
+                ret.arg = None
+        if negative:
+            ret.arg = -ret.arg
+            if ret.arg < 0:
+                ret.arg += argmax
+                if ret.arg < 0:
+                    raise Exception("Argument was too negative")
+        if ret.arg is None:
+            if arg.lower() in registers:
+                ret.arg = registers[arg.lower()]
+        if (ret.arg is None) and (ret.arg in labels):
+            ret.arg = labels[ret.arg]
+        if (ret.arg is not None) and (ret.arg >= argmax):
+            raise Exception(f"Argument {ret.arg} out of bounds for line {line}")
         return ret
 
     def to_bytes(self):
@@ -126,6 +161,11 @@ class Action:
             val = actionNameToOpcode[self.actionName] * 16 + self.arg
             self.bytes[0] = val
         return self.bytes
+
+    def bytelen(self):
+        if self.bytes:
+            return len(self.bytes)
+        return 1
 
 
 class Label:
@@ -149,78 +189,95 @@ class Label:
 class Assembler:
     program = None
     pc = 0
-    labels = {}
 
     def process_action(self, action):
-        print(f"{action.actionName}@{self.pc} -> {action.to_bytes().hex()}")
+        print(f"{action.actionName}@{labels['pc']} -> {action.to_bytes().hex()}")
         self.program += action.to_bytes()
         pass
 
     def process_label(self, label):
-        self.labels[label.name] = self.pc
+        labels[label.name] = labels["pc"]
 
     def unwrap_line(self, line: str):
-        # set mem register from label
-        match = re.match(re.compile(r'^(setml)\s('+labelRegex+')$'), line)
-        if match:
-            label = self.labels.get(match.group(2)) or 0
-            return ["set RAT",
-                    "sub acc", f"addi {int(label/4096)%16}", f"andi 0xF", f"addi {int(label/256)%16}", "set RMH",
-                    "sub acc", f"addi {int(label/16  )%16}", f"andi 0xF", f"addi {int(label    )%16}", "set RML",
-                    "get RAT"]
-        match = re.match(re.compile(r'^(setsl)\s('+labelRegex+')$'), line)
-        if match:
-            label = self.labels.get(match.group(2)) or 0
-            return ["set RAT",
-                    "sub acc", f"addi {int(label/4096)%16}", f"andi 0xF", f"addi {int(label/256)%16}", "set RSH",
-                    "sub acc", f"addi {int(label/16  )%16}", f"andi 0xF", f"addi {int(label    )%16}", "set RSL",
-                    "get RAT"]
-        # Jmp to register
-        match = re.match(re.compile(r'^(j[a-z]{2})\s('+labelRegex+')$'), line)
-        if match:
-            return [f"setsl {match.group(2)}", f"jmp {jumpToOpcode[match.group(1)]}"]
 
-        action = Action.parse_action(line, 256)
+        # Multiline things formatted as instructions
+        action = Action.parse_action(line, 65536)
         if not action:
             return [line]
+
+        # set mem register from label
+        if action.actionName == "setml":
+            return ["set RAT",
+                    "clr", f"addi {int(action.arg/4096)%16}", f"andi 0xF", f"addi {int(action.arg/256)%16}", "set RMH",
+                    "clr", f"addi {int(action.arg/16  )%16}", f"andi 0xF", f"addi {int(action.arg    )%16}", "set RML",
+                    "get RAT"]
+        if action.actionName == "setsl":
+            return ["set RAT",
+                    "clr", f"addi {int(action.arg/4096)%16}", f"andi 0xF", f"addi {int(action.arg/256)%16}", "set RSH",
+                    "clr", f"addi {int(action.arg/16  )%16}", f"andi 0xF", f"addi {int(action.arg    )%16}", "set RSL",
+                    "get RAT"]
+        # Jmp to register
+        match = re.match(re.compile(regexjmpreg), line)
+        if match:
+            return [f"setml {match.group(2)}", match.group(1)]
+
+        # conditional instructions
+        match = re.match(re.compile(r'^(\w+)('+conditionalRegex+')(.*)$'), line)
+        if match:
+            instruction = match.group(1)
+            condition = match.group(2)
+            arg = match.group(3)
+            if instruction == 's' or instruction == 'j':
+                return [f"{instruction} {conditionalOpcode[condition]}"]
+            else:
+                # print(f"conditional split: {line} -> s{condition}, {instruction}{arg}")
+                # Do-if = ~skip-if
+                return [f"s {conditionalOpcode[condition]^1}", f"{instruction}{arg}"]
+        # alias instructions
+        if action.actionName == "addi8":
+            # put rac in RAT, setup acc, add
+            return ["set RAT", "clr", f"ori {action.arg % 16}", f"ori {int(action.arg / 16)}", "add RAT"]
         if action.actionName == "clr":
-            return ["sub R0"]
+            return ["xor rac"]
         if action.actionName == "nop":
-            return ["addi 0"]
+            # Done instead of addi 0 so that it doesn't interfere with carry
+            return ["and rac"]
         if action.actionName == "push":
             return ["set RAT",
-                    "get RSL", "addi 1", "set RML", "get RSH", "?", "set RMH", "wb RAT", "add RSL",
+                    "get RSL", "addi 1", "set RML", "set RSL", "get RSH", "addict 1", "set RMH", "set RSH", "wb RAT",
                     "get RAT"]
         if action.actionName == "pop":
-            return ["rb RAT", "get RMH", "subi 1", "set RSH", "get RML", "?", "set RML", "get RAT"]
+            return ["rb RAT",
+                    "get RSL", "subi 1", "set RML", "set RSL", "get RSH", "subict 1", "set RMH", "set RSH"
+                    "get RAT"]
         return [line]
 
     def lines_strip_comments(self, lines):
-        self.pc = 0
-        while self.pc < len(lines):
+        labels["pc"] = 0
+        while labels["pc"] < len(lines):
             # Strip Comments
-            comment_index = max(lines[self.pc].find("//"), lines[self.pc].find(";"))
+            comment_index = max(lines[labels["pc"]].find("//"), lines[labels["pc"]].find(";"))
             if comment_index != -1:
-                lines[self.pc] = lines[self.pc][:comment_index]
+                lines[labels["pc"]] = lines[labels["pc"]][:comment_index]
             # Strip Whitespace
-            lines[self.pc] = lines[self.pc].strip()
+            lines[labels["pc"]] = lines[labels["pc"]].strip()
             # Remove Empty Lines
-            if lines[self.pc] == '':
-                del lines[self.pc]
+            if lines[labels["pc"]] == '':
+                del lines[labels["pc"]]
                 continue
-            self.pc += 1
+            labels["pc"] += 1
         return lines
 
     def lines_unwrap(self, lines):
         while True:
             newlines = []
-            self.pc = 0
+            labels["pc"] = 0
             oldpc = 0
             while oldpc < len(lines):
                 toAdd = self.unwrap_line(lines[oldpc])
                 for line in toAdd:
                     newlines.append(line)
-                    self.pc = self.pc + 1
+                    labels["pc"] = labels["pc"] + 1
                 oldpc += 1
             if newlines == lines:
                 break
@@ -229,46 +286,42 @@ class Assembler:
         return newlines
 
     def lines_process_labels(self, lines):
-        self.pc = 0
+        labels["pc"] = 0
         for line in lines:
             label = Label.parse_label(line)
             if label:
                 self.process_label(label)
             action = Action.parse_action(line)
             if action:
-                self.pc = self.pc + len(action.to_bytes())
+                labels["pc"] = labels["pc"] + action.bytelen()
 
     def __init__(self, filename, memory):
         self.program = bytearray(memory)
         with open("Assembler/"+filename, 'r') as file:
             filedata = file.read()
             lines = filedata.split('\n')
-
             print("PHASE 0 - strip comments")
             # Strip comments
             lines = self.lines_strip_comments(lines)
             print(lines)
-
             print("PHASE 1 - Pseudounwrap for labels")
             lines_for_labelling = self.lines_unwrap(lines)
             print(lines_for_labelling)
             print("PHASE 2 - Process All Labels")
             self.lines_process_labels(lines_for_labelling)
-            for label in self.labels.keys():
-                print(f"{label} -> {self.labels[label]}")
+            for label in labels.keys():
+                print(f"{label} -> {labels[label]}")
             print("PHASE 3 - Actual Unwrap")
             lines = self.lines_unwrap(lines)
-
             print("PHASE 4 - Process All Actions")
-            self.pc = 0
+            labels["pc"] = 0
             for line in lines:
                 action = Action.parse_action(line)
                 if action:
                     self.process_action(action)
-                    self.pc = self.pc + len(action.to_bytes())
+                    labels["pc"] = labels["pc"] + len(action.to_bytes())
                 elif not Label.parse_label(line):
                     print(f"UNKNOWN LINE {line}", file=sys.stderr)
-
             print("PHASE 5 - Make Hex")
             prog_hex = self.program.hex()
 
