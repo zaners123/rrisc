@@ -149,9 +149,11 @@ class Action:
         if ret.arg is None:
             if arg.lower() in registers:
                 ret.arg = registers[arg.lower()]
-        if (ret.arg is None) and (ret.arg in labels):
-            ret.arg = labels[ret.arg]
-        if (ret.arg is not None) and (ret.arg >= argmax):
+        if (ret.arg is None) and (arg in labels):
+            ret.arg = labels[arg]
+        if ret.arg is None:
+            ret.arg = 0
+        if ret.arg >= argmax:
             raise Exception(f"Argument {ret.arg} out of bounds for line {line}")
         return ret
 
@@ -208,13 +210,14 @@ class Assembler:
         # set mem register from label
         if action.actionName == "setml":
             return ["set RAT",
-                    "clr", f"addi {int(action.arg/4096)%16}", f"andi 0xF", f"addi {int(action.arg/256)%16}", "set RMH",
-                    "clr", f"addi {int(action.arg/16  )%16}", f"andi 0xF", f"addi {int(action.arg    )%16}", "set RML",
+                    "clr", f"xori {int(action.arg/256)%16}", f"xori {int(action.arg/4096)%16}", "set RMH",
+                    "clr", f"xori {int(action.arg    )%16}", f"xori {int(action.arg/16  )%16}", "set RML",
                     "get RAT"]
         if action.actionName == "setsl":
+            # print(f"{line} -> {action.actionName},{action.arg}")
             return ["set RAT",
-                    "clr", f"addi {int(action.arg/4096)%16}", f"andi 0xF", f"addi {int(action.arg/256)%16}", "set RSH",
-                    "clr", f"addi {int(action.arg/16  )%16}", f"andi 0xF", f"addi {int(action.arg    )%16}", "set RSL",
+                    "clr", f"xori {int(action.arg/256)%16}", f"xori {int(action.arg/4096)%16}", "set RSH",
+                    "clr", f"xori {int(action.arg    )%16}", f"xori {int(action.arg/16  )%16}", "set RSL",
                     "get RAT"]
         # Jmp to register
         match = re.match(re.compile(regexjmpreg), line)
@@ -243,13 +246,16 @@ class Assembler:
             # Done instead of addi 0 so that it doesn't interfere with carry
             return ["and rac"]
         if action.actionName == "push":
+            # Increments then writes
             return ["set RAT",
-                    "get RSL", "addi 1", "set RML", "set RSL", "get RSH", "addict 1", "set RMH", "set RSH", "wb RAT",
-                    "get RAT"]
+                    "get RSL", "addi 1", "set RML", "set RSL",
+                    "get RSH", "addict 1", "set RMH", "set RSH",
+                    "wb RAT", "get RAT"]
         if action.actionName == "pop":
-            return ["rb RAT",
-                    "get RSL", "subi 1", "set RML", "set RSL", "get RSH", "subict 1", "set RMH", "set RSH"
-                    "get RAT"]
+            # Reads then decrements
+            return ["get RSL", "set RML", "subi 1", "set RSL",
+                    "get RSH", "set RMH", "subicf 1", "set RSH",
+                    "rb ACC"]
         return [line]
 
     def lines_strip_comments(self, lines):
@@ -310,7 +316,7 @@ class Assembler:
             print("PHASE 2 - Process All Labels")
             self.lines_process_labels(lines_for_labelling)
             for label in labels.keys():
-                print(f"{label} -> {labels[label]}")
+                print(f"{label} -> {labels[label]},{hex(labels[label])}")
             print("PHASE 3 - Actual Unwrap")
             lines = self.lines_unwrap(lines)
             print("PHASE 4 - Process All Actions")

@@ -48,25 +48,21 @@ These ends up being around 4 clock cycles, since it uses somewhat of an IF,ID,EX
 ### (0x0) addi - Add Immediate 
 ```
 acc = acc + imm
-flag-add = true
 flag-carry = true if a carry occurred
 ```
 ### (0x1) add - Add Register 
 ```
 acc = acc + R[imm]
-flag-add = true
 flag-carry = true if a carry occurred
 ```
 ### subi (0x2) - subtract immediate
 ```
 acc = acc - imm
-flag-add = false
 flag-carry = true if a carry (aka borrow) occurred
 ```
 ### sub (0x3) - subtract
 ```
 acc = acc - R[imm]
-flag-add = false
 flag-carry = true if a carry (aka borrow) occurred
 ```
 ### (0x2) andi - And Immediate 
