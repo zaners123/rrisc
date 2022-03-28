@@ -55,7 +55,7 @@ registers = {
     "r7":   0x7,
     "r8":   0x8,
     "r9":   0x9,
-    "rat":  0xA,
+    "rat":  0x9,
     "r10":  0xA,
     "ra":   0xA,
     "cmp":  0xB,
@@ -193,7 +193,7 @@ class Assembler:
     pc = 0
 
     def process_action(self, action):
-        print(f"{action.actionName}@{labels['pc']} -> {action.to_bytes().hex()}")
+        print(f"{action.actionName}@{hex(labels['pc'])} -> {action.to_bytes().hex()}")
         self.program += action.to_bytes()
         pass
 
@@ -245,24 +245,52 @@ class Assembler:
         if action.actionName == "nop":
             # Done instead of addi 0 so that it doesn't interfere with carry
             return ["and rac"]
+        if action.actionName == "incsp":# inc stack pointer
+            return ["get RSL", "addi 1", "set RML", "set RSL",
+                    "get RSH", "addict 1", "set RMH", "set RSH"]
         if action.actionName == "push":
             # Increments then writes
             return ["set RAT",
-                    "get RSL", "addi 1", "set RML", "set RSL",
-                    "get RSH", "addict 1", "set RMH", "set RSH",
+                    "incsp",
                     "wb RAT", "get RAT"]
         if action.actionName == "pop":
             # Reads then decrements
             return ["get RSL", "set RML", "subi 1", "set RSL",
                     "get RSH", "set RMH", "subicf 1", "set RSH",
                     "rb ACC"]
+
+        if action.actionName == "pushml":
+            # Increments then writes
+            return ["set RAT",
+                    # upper
+                    "incsp",
+                    "clr", f"xori {int(action.arg / 256) % 16}", f"xori {int(action.arg / 4096) % 16}", "wb ACC",
+
+                    # lower
+                    "incsp",
+                    "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "wb ACC",
+
+                    "get RAT"]
+        if action.actionName == "popml":# Kills ACC
+            # Reads then decrements
+            return [
+                    # Read upper
+                    "get RSL", "set RML", "subi 1", "set RSL",
+                    "get RSH", "set RMH", "subicf 1", "set RSH",
+                    "rb RAT",
+                    # Read lower
+                    "get RSL", "set RML", "subi 1", "set RSL",
+                    "get RSH", "set RMH", "subicf 1", "set RSH",
+                    "rb RMH", "set R3",
+                    "get RAT", "set RML", "set R4",]
+
         return [line]
 
     def lines_strip_comments(self, lines):
         labels["pc"] = 0
         while labels["pc"] < len(lines):
             # Strip Comments
-            comment_index = max(lines[labels["pc"]].find("//"), lines[labels["pc"]].find(";"))
+            comment_index = max(lines[labels["pc"]].find("//"), lines[labels["pc"]].find("#"), lines[labels["pc"]].find(";"))
             if comment_index != -1:
                 lines[labels["pc"]] = lines[labels["pc"]][:comment_index]
             # Strip Whitespace
@@ -343,4 +371,5 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    s = Assembler("code.asm", 0)
+    # s = Assembler("code.asm", 0)
+    s = Assembler("multfunc.asm", 0)

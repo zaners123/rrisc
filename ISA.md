@@ -9,24 +9,26 @@ This is the accumulator register, and nearly every operation involves it somehow
 ### R1-R13: General Purpose Regsiters
 
 ### R14-R15: Memory Register
-- R0    = RAC - Accumulator. Output register for nearly every operation (unchanged in j, s, wb, set)
-- R1-R9 = general-purpose registers
-- R10   = RAT - Assembler Temporary (since nearly every instruction touches the ALU, used for push,jmp,etc)
-- R11   = RCM = CMP - Compare. Used by jlt, sgt, jeq, jne, etc.
+- R0    = RAC Accumulator. Output register for nearly every operation (unchanged in j, s, wb, set)
+- R1-R8 = general-purpose registers
+- R9    = RAT Assembler Temporary (since nearly every instruction touches the ALU, used for push,jmp,etc)
+- R10   = RCS Compare Source. Unary sif/jif instructions use this. In form "(op) RCS"
+  - Ex: jnz jumps if "RCS != 0"
+- R11   = RCD Compare Dst. Binary sif/jif instructions use this. In form "RCS (op) RCD"
+  - Ex: jlt jumps if "RCS < RCD" 
 - R12   = RSH (StackRegister High, most significant 8 bits)
 - R13   = RSL (StackRegister Low, least significant 8 bits)
 - R14   = RMH (Memory High, most  significant 8 bits)
 - R15   = RML (Memory Low , least significant 8 bits)
 
-RSTK = {RSH,RSL} = {R12,R13}
-RMEM = {RMH,RML} = {R14,R15}
-RSRC = Source (aka input aka read-from)
-RDST = Destination (aka output aka write-to)
+RSTK = {RSH,RSL} = {R12,R13}, The stack pointer
+RMEM = {RMH,RML} = {R14,R15}, The memory pointer
 
 ## Examples:
-- To jump, you set RMEM registers, then call a variant of jmp
-- To read memory, you set RMEM, then call "rb {RSRC}"
-- To write memory, you set RMEM then call "wb {RDST}"
+- To double acc, call "add acc" (acc = acc + acc)
+- To jump, you set RMEM, then call a variant of jmp
+- To read memory, you set RMEM, then call "rb {RDST}"
+- To write memory, you set RMEM then call "wb {RSRC}"
 
 # Instruction Format
 All instructions are, in hardware, a single byte. A 4-bit opcode, followed by a 4-bit number, imm.
@@ -43,62 +45,62 @@ R[imm] = Register at imm (R0 = acc)
 
 These all take exactly one controller-cycle-per-instruction.
 
-These ends up being around 4 clock cycles, since it uses somewhat of an IF,ID,EX,WB pipeline.
+These are always 3 clock cycles, since it uses an IF,EX,WB pipeline.
 
-### (0x0) addi - Add Immediate 
+### (0x0, 0b0000) addi - Add Immediate 
 ```
 acc = acc + imm
 flag-carry = true if a carry occurred
 ```
-### (0x1) add - Add Register 
+### (0x1, 0b0001) add - Add Register 
 ```
 acc = acc + R[imm]
 flag-carry = true if a carry occurred
 ```
-### subi (0x2) - subtract immediate
+### (0x2, 0b0010) subi - subtract immediate
 ```
 acc = acc - imm
 flag-carry = true if a carry (aka borrow) occurred
 ```
-### sub (0x3) - subtract
+### (0x3, 0b0011) sub - subtract
 ```
 acc = acc - R[imm]
 flag-carry = true if a carry (aka borrow) occurred
 ```
-### (0x2) andi - And Immediate 
+### (0x4, 0b0100) andi - And Immediate 
 ```
 acc = acc & imm
 acc[3:0] <-> acc[7:4]
 ```
 Note that since imm is only 4 bits, it wipes the most-significant 4-bits
-### (0x3) and - And Register
+### (0x5, 0b0101) and - And Register
 ```acc = acc & R[imm]```
-### (0x4) eor - Eor Immediate
-```
-acc[3:0] = acc[3:0]^imm
-acc[3:0] <-> acc[7:4]
-```
-### eori (0x5) - eor immediate
-```acc = acc^R[imm]```
-### set (0x6) - set register
+### (0x6, 0b0110) get - get register
 ```R[imm] = acc```
-### get (0x7) - get register
+### (0x7, 0b0111) set - set register
 ```acc = R[imm]```
-### ori (0xA) - logical or immediate
+### (0x8, 0b1000) ori - logical or immediate
 ```
 acc = acc or imm
 acc[3:0] <-> acc[7:4]
 ```
-### or (0xB) - logical or
+### (0x9, 0b1001) or - logical or
 ```acc = acc or R[imm]```
-### sif (0xC, 0b1100) - Skip If
+### (0xA, 0b1010) xori - eor immediate
+```acc = acc^R[imm]```
+### (0xB, 0b1011) xor - Eor Immediate
+```
+acc[3:0] = acc[3:0]^imm
+acc[3:0] <-> acc[7:4]
+```
+### (0xC, 0b1100) sif - Skip If
 ```
 skip = condition (see jmp conditions)
 if skip:
     PC = PC+8 instead of PC+4
 ```
 Will likely be added to make all instructions conditional (such as origz being ori )
-### jif (0xD, 0b1101) - Jump If
+### (0xD, 0b1101) jif - Jump If
 ```
 jump = switch(imm) {
     0: JAL - always
@@ -121,9 +123,9 @@ jump = switch(imm) {
 if jump:
     PC = RMEM
 ```
-### rb (0xE, 0b1110) Read Byte from memory
+### (0xE, 0b1110) rb Read Byte from memory
 ```R[imm] = mem[addr]```
-### wb (0xF, 0b1111) Write Byte to memory
+### (0xF, 0b1111) wb Write Byte to memory
 ```mem[addr] = R[imm]```
 Keep in mind to set both memory registers, as mentioned above.
 
