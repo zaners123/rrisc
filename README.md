@@ -15,7 +15,7 @@ Instructions are broken up into two parts. Here's the entire Instruction Set Arc
 
  ID | Opcode  |  Description          |  Action
 ----|---------|-----------------------|-------------------------
- -  | 4 bits  | -                     | 4 bits
+ _  | 4 bits  | _                     | 4 bits
 0x0 | ADDI    | Add Immediate         | ACC = ACC + imm
 0x1 | ADD     | Add Register          | ACC = ACC + R\[imm\]
 0x2 | SUBI    | Subtract Immediate    | ACC = ACC - imm
