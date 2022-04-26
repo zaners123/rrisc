@@ -44,9 +44,8 @@ actionNameToOpcode = {
 }
 
 registers = {
+    "acc": 0x0, "rac": 0x0,
     "r0": 0x0,
-    "acc": 0x0,
-    "rac": 0x0,
 
     "r1": 0x1,
     "r2": 0x2,
@@ -60,30 +59,23 @@ registers = {
     "r9": 0x9,
     "rat": 0x9,
 
-    "r10": 0xA,
-    "ra": 0xA,
-    "cmp": 0xA,
-    "rcs": 0xA,
+    "r10": 0xA, "ra": 0xA,
+    "rsh": 0xA,
 
-    "r11": 0xB,
-    "rb": 0xB,
-    "dst": 0xB,
-    "rcd": 0xB,
+    "r11": 0xB, "rb": 0xB,
+    "rsl": 0xB,
 
-    "r12": 0xC,
-    "rc": 0xC,
-    "rsh": 0xC,
+    "r12": 0xC, "rc": 0xC,
+    "rcs": 0xC, "cmp": 0xC,
 
-    "rsl": 0xD,
-    "r13": 0xD,
-    "rd": 0xD,
+    "r13": 0xD, "rd": 0xD,
+    "rcd": 0xD, "dst": 0xD,
 
+    "r14": 0xE, "re": 0xE,
     "rmh": 0xE,
-    "r14": 0xE,
-    "re": 0xE,
+
+    "r15": 0xF, "rf": 0xF,
     "rml": 0xF,
-    "r15": 0xF,
-    "rf": 0xF,
 }
 
 conditionalRegex = ('|'.join(str(x) for x in conditionalOpcode.keys()))
@@ -93,7 +85,6 @@ labelRegex = r'(?:[0-9]*[A-Za-z_]+[0-9]*)+'
 regexjmpreg = r'^(j(?:' + conditionalRegex + '))\s(' + labelRegex + ')$'
 
 labels = {}
-
 
 class Action:
     actionName = None
@@ -210,6 +201,7 @@ class Label:
 class Assembler:
     program = None
     pc = 0
+    srid = 0
 
     def process_action(self, action):
         print(f"{action.actionName}@{hex(labels['pc'])} -> {action.to_bytes().hex()}")
@@ -242,7 +234,14 @@ class Assembler:
                 "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "set RSL",
                 "get RAT"
             ]
-
+        # Jump into subroutine
+        if action.actionName == "jumpsr":
+            labelname = 'srid'+str(self.srid)
+            self.srid = self.srid + 1
+            return [f"pushml {labelname}",
+                    f"setml {action.arg}",
+                    "jal",
+                    f"{labelname}:"]
         # inc stack pointer
         if action.actionName == "incsp":
             return ["get RSL", "addi 1", "set RML", "set RSL",
@@ -292,27 +291,19 @@ class Assembler:
                     "incsp",
                     "wb RAT", "get RAT"]
         if action.actionName == "pushpc":
-            return ["push16 pc"]
-        if action.actionName == "push16":
-            return [
-                # Push Lower 8 bits
-                "clr", f"addi8 {int(action.arg/256)}", "push",
-                # Push Upper 8 bits
-                "clr", f"addi8 {action.arg%256}", "push",
-            ]
+            return ["pushml pc"]
         if action.actionName == "pop":
             # Reads then decrements
             return ["get RSL", "set RML", "subi 1", "set RSL",
                     "get RSH", "set RMH", "subicf 1", "set RSH",
                     "rb ACC"]
-
-        if action.actionName == "pushml":
+        if action.actionName == "pushml": # TODO HOW IS THIS DIFFERENT FROM push16?
             # Increments then writes
             return ["set RAT",
+
                     # upper
                     "incsp",
                     "clr", f"xori {int(action.arg / 256) % 16}", f"xori {int(action.arg / 4096) % 16}", "wb ACC",
-
                     # lower
                     "incsp",
                     "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "wb ACC",
@@ -328,9 +319,9 @@ class Assembler:
                 # Read lower to RML, decrement SP
                 "get RSL", "set RML", "subi 1", "set RSL",
                 "get RSH", "set RMH", "subicf 1", "set RSH",
-                "rb RML",
+                "rb RMH",
                 # set RAT to RML
-                "get RAT", "set RMH"
+                "get RAT", "set RML"
             ]
 
         return [line]
@@ -353,6 +344,9 @@ class Assembler:
         return lines
 
     def lines_unwrap(self, lines):
+
+        self.srid = 0  # TODO This is an unintuitive place for this line, but is required since srid must be called on all label reparsing
+
         while True:
             newlines = []
             labels["pc"] = 0
@@ -422,4 +416,5 @@ class Assembler:
 
 if __name__ == '__main__':
     Assembler("code.asm", 0)
+    # Assembler("code.asm", 0)
     # Assembler("beef.asm", 0)

@@ -1,30 +1,17 @@
-init:
     setsl stack
 
-    push16 out
-    push16 out
-    push16 out
-    push16 out
-    push16 out
-
-    addi 3
+    addi 4
     set R1
 
-    ;TODO turn this into shortcut such as jwl:
-    push16 out
-    setml doubler
-    jal
-    out:
+loopy:
 
-    push16 out2
-    setml doubler
-    jal
-    out2:
+    jumpsr doubler
+    jumpsr doubler
+    jumpsr doubler
 
-    setml init
-    jal
+    jmp loopy
 
-.buffer 80
+.buffer 320
 
 doubler:
     get R1
