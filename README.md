@@ -24,8 +24,8 @@ Instructions are broken up into two parts. Here's the entire Instruction Set Arc
 0x5 | AND     | And Register          | ACC = ACC & R\[imm\]
 0x6 | GET     | Get Register          | ACC = R\[imm\]
 0x7 | SET     | Set Register          | R\[imm\] = ACC
-0x8 | ORI     | Or Immediate          | ACC = ACC | imm
-0x9 | OR      | Or Register           | ACC = ACC | R\[imm\]
+0x8 | ORI     | Or Immediate          | ACC = ACC \| imm
+0x9 | OR      | Or Register           | ACC = ACC \| R\[imm\]
 0xA | XORI    | Xor Immediate         | ACC = ACC ^ imm
 0xB | XOR     | Xor Register          | ACC = ACC ^ R\[imm\]
 0xC | SIF     | Conditional Skip      | skip if eval(imm)
