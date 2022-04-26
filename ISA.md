@@ -105,18 +105,18 @@ Will likely be added to make all instructions conditional (such as origz being o
 jump = switch(imm) {
     0: JAL - always
     1: JNO - never
-    2: JNZ - acc != 0
-    3: JEZ - acc == 0
-    4: JLZ - acc[MSB] == 1 (acc negative)
-    5: JGZ - acc[MSB] == 0 (acc positive) 
-    6: JLT - acc < R[memio]
-    7: JGE - acc >= R[memio]
-    8: JEQ - acc == R[memio]
-    9: JNE - acc != R[memio]
-    A: JGT - acc > R[memio]
-    B: JLE - acc <= R[memio]
-    C: JOD - acc%2 == 1
-    D: JEV - acc%2 == 0
+    2: JNZ - cmp != 0
+    3: JEZ - cmp == 0
+    4: JLZ - cmp[MSB] == 1 (cmp negative)
+    5: JGZ - cmp[MSB] == 0 (cmp positive) 
+    6: JLT - cmp <  dst
+    7: JGE - cmp >= dst
+    8: JEQ - cmp == dst
+    9: JNE - cmp != dst
+    A: JGT - cmp >  dst
+    B: JLE - cmp <= dst
+    C: JOD - cmp%2 == 1
+    D: JEV - cmp%2 == 0
     E: JCT - carry flag true
     F: JCF - carry flag false
 }
@@ -127,32 +127,15 @@ if jump:
 ```R[imm] = mem[addr]```
 ### (0xF, 0b1111) wb Write Byte to memory
 ```mem[addr] = R[imm]```
+```R[imm] = R[imm]```
 Keep in mind to set both memory registers, as mentioned above.
 
 # Alias Instructions
 
-### push - Push
-```MEM[SR++] = acc```
+Aliases are recommended methods for 
 
-```
-; Put acc in memio
-set RAT
-; Increment RSRL
-get RSRL
-addi 1
-set RSRL
-jnz done
+### push - Push: Increments then Writes
+```MEM[++SR] = acc```
 
-
-done:
-
-```
-
-Pushes the immediate value onto the nibble at the memory address the stack is at.
-Then increments the stack pointer. (If SRL is FFFF: SRL=0; SRH++)
-### pop - Pop
-```acc = MEM[SR--]```
-Problem: Push/Pop require a 16-bit add, but the computer only has 8 bit. This could be solved by using the carry, but how?
- - Dedicated Carry instruction: This would be over the top
- - Add is always add with carry: When/How does it know to specify when to add the carry?
-   - "addi 0" uses and removes the carry bit could work, but would require at least 5 chips
+### pop - Pop: Reads then Decrements
+```acc = MEM[--SR]```

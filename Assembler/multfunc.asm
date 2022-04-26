@@ -1,14 +1,3 @@
-addi 15
-set R5
-wb R5
-rb R1
-rb R2
-rb R3
-rb R4
-
-
-
-
 setsl stack
 main:
     addi 5

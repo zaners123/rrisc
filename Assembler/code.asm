@@ -1,36 +1,35 @@
-; For RRISC
+init:
     setsl stack
 
-    clr
-    ori 5
-    ori 0
+    push16 out
+    push16 out
+    push16 out
+    push16 out
+    push16 out
+
+    addi 3
     set R1
 
-    clr
-    ori 2
-    ori 0
-    set R2
-mult:;R3 = R1 * R2
-    setml multloop
-    clr
-    set R3;result
-multloop:
-    add R2
-    add R2;carry=cut MSB
-    set R2
-    clr
-    addct R1
-    add R3
+    ;TODO turn this into shortcut such as jwl:
+    push16 out
+    setml doubler
+    jal
+    out:
+
+    push16 out2
+    setml doubler
+    jal
+    out2:
+
+    setml init
+    jal
+
+.buffer 80
+
+doubler:
+    get R1
     add R0
-    set R3
-
-    get R2
-    set RCS
-    jnz
-multdone:;R3 = 10
-    get R3
-
-
-
-
-
+    set R1
+    popml
+    jal
+stack:

@@ -1,3 +1,4 @@
+import math
 import re
 import sys
 
@@ -24,56 +25,65 @@ conditionalOpcode = {
 }
 
 actionNameToOpcode = {
-    "addi":  0x0,
-    "add":   0x1,
-    "subi":  0x2,
-    "sub":   0x3,
-    "andi":  0x4,
-    "and":   0x5,
-    "get":   0x6,
-    "set":   0x7,
-    "ori":   0x8,
-    "or":    0x9,
-    "xori":  0xA,
-    "xor":   0xB,
-    "s":     0xC,
-    "j":     0xD,
-    "rb":    0xE,
-    "wb":    0xF,
+    "addi": 0x0,
+    "add": 0x1,
+    "subi": 0x2,
+    "sub": 0x3,
+    "andi": 0x4,
+    "and": 0x5,
+    "get": 0x6,
+    "set": 0x7,
+    "ori": 0x8,
+    "or": 0x9,
+    "xori": 0xA,
+    "xor": 0xB,
+    "s": 0xC,
+    "j": 0xD,
+    "rb": 0xE,
+    "wb": 0xF,
 }
 
 registers = {
-    "acc":  0x0,
-    "rac":  0x0,
-    "r0":   0x0,
-    "r1":   0x1,
-    "r2":   0x2,
-    "r3":   0x3,
-    "r4":   0x4,
-    "r5":   0x5,
-    "r6":   0x6,
-    "r7":   0x7,
-    "r8":   0x8,
-    "r9":   0x9,
-    "rat":  0x9,
-    "r10":  0xA,
-    "ra":   0xA,
-    "cmp":  0xB,
-    "rcm":  0xB,
-    "r11":  0xB,
-    "rb":   0xB,
-    "rsh":  0xC,
-    "r12":  0xC,
-    "rc":   0xC,
-    "rsl":  0xD,
-    "r13":  0xD,
-    "rd":   0xD,
-    "rmh":  0xE,
-    "r14":  0xE,
-    "re":   0xE,
-    "rml":  0xF,
-    "r15":  0xF,
-    "rf":   0xF,
+    "r0": 0x0,
+    "acc": 0x0,
+    "rac": 0x0,
+
+    "r1": 0x1,
+    "r2": 0x2,
+    "r3": 0x3,
+    "r4": 0x4,
+    "r5": 0x5,
+    "r6": 0x6,
+    "r7": 0x7,
+    "r8": 0x8,
+
+    "r9": 0x9,
+    "rat": 0x9,
+
+    "r10": 0xA,
+    "ra": 0xA,
+    "cmp": 0xA,
+    "rcs": 0xA,
+
+    "r11": 0xB,
+    "rb": 0xB,
+    "dst": 0xB,
+    "rcd": 0xB,
+
+    "r12": 0xC,
+    "rc": 0xC,
+    "rsh": 0xC,
+
+    "rsl": 0xD,
+    "r13": 0xD,
+    "rd": 0xD,
+
+    "rmh": 0xE,
+    "r14": 0xE,
+    "re": 0xE,
+    "rml": 0xF,
+    "r15": 0xF,
+    "rf": 0xF,
 }
 
 conditionalRegex = ('|'.join(str(x) for x in conditionalOpcode.keys()))
@@ -95,19 +105,27 @@ class Action:
 
     @staticmethod
     def parse_action(line: str, argmax=16):
-
-        asciifinder = re.compile(r'^\.ascii\s*"([A-Za-z0-9\\]*)"$')
-        match = re.match(asciifinder, line)
+        match = re.match(re.compile(r'^\.ascii\s*"([A-Za-z0-9\\]*)"$'), line)
         if match:
             ret = Action()
             ret.bytes = bytes(match.group(1), 'utf-8')
             return ret
 
-        asciizfinder = re.compile(r'^\.asciiz\s*"([A-Za-z0-9\\]*)"$')
-        match = re.match(asciizfinder, line)
+        match = re.match(re.compile(r'^\.bin\s*([01]*)$'), line)
         if match:
             ret = Action()
-            string = match.group(1)+"\0"
+            ret.actionName = ".bin"
+            numbits = len(match.group(1))
+            ret.bytes = bytearray(math.floor(numbits / 8))
+            for b in range(numbits):
+                if match.group(1)[b] == '1':
+                    ret.bytes[math.floor((numbits - b - 1) / 8)] |= 1 << ((numbits - b - 1) % 8)
+            return ret
+
+        match = re.match(re.compile(r'^\.asciiz\s*"([A-Za-z0-9\\]*)"$'), line)
+        if match:
+            ret = Action()
+            string = match.group(1) + "\0"
             ret.bytes = bytes(string, 'utf-8')
             return ret
 
@@ -115,6 +133,7 @@ class Action:
         match = re.match(bufferfinder, line)
         if match:
             ret = Action()
+            ret.actionName = ".buffer"
             ret.bytes = bytearray(int(match.group(1)))
             return ret
 
@@ -179,7 +198,7 @@ class Label:
 
     @staticmethod
     def parse_label(line: str):
-        labelfinder = re.compile(r'^('+labelRegex+'):$')
+        labelfinder = re.compile(r'^(' + labelRegex + '):$')
         match = re.match(labelfinder, line)
         if not match:
             return None
@@ -209,23 +228,45 @@ class Assembler:
 
         # set mem register from label
         if action.actionName == "setml":
-            return ["set RAT",
-                    "clr", f"xori {int(action.arg/256)%16}", f"xori {int(action.arg/4096)%16}", "set RMH",
-                    "clr", f"xori {int(action.arg    )%16}", f"xori {int(action.arg/16  )%16}", "set RML",
-                    "get RAT"]
+            return [
+                "set RAT",
+                "clr", f"xori {int(action.arg / 256) % 16}", f"xori {int(action.arg / 4096) % 16}", "set RMH",
+                "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "set RML",
+                "get RAT"
+            ]
         if action.actionName == "setsl":
             # print(f"{line} -> {action.actionName},{action.arg}")
-            return ["set RAT",
-                    "clr", f"xori {int(action.arg/256)%16}", f"xori {int(action.arg/4096)%16}", "set RSH",
-                    "clr", f"xori {int(action.arg    )%16}", f"xori {int(action.arg/16  )%16}", "set RSL",
-                    "get RAT"]
+            return [
+                "set RAT",
+                "clr", f"xori {int(action.arg / 256) % 16}", f"xori {int(action.arg / 4096) % 16}", "set RSH",
+                "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "set RSL",
+                "get RAT"
+            ]
+
+        # inc stack pointer
+        if action.actionName == "incsp":
+            return ["get RSL", "addi 1", "set RML", "set RSL",
+                    "get RSH", "addict 1", "set RMH", "set RSH"]
+        # inc memory pointer
+        if action.actionName == "incmp":
+            return ["get RML", "addi 1", "set RML",
+                    "get RMH", "addict 1", "set RMH"]
+        # addi memory pointer
+        if action.actionName == "addimp":
+            return ["get RML", f"addi {action.arg}", "set RML",
+                    "get RMH", "addict 1", "set RMH"]
+        # add memory pointer
+        if action.actionName == "addmp":
+            return ["get RML", f"add {action.arg}", "set RML",
+                    "get RMH", "addict 1", "set RMH"]
+
         # Jmp to register
         match = re.match(re.compile(regexjmpreg), line)
         if match:
             return [f"setml {match.group(2)}", match.group(1)]
 
         # conditional instructions
-        match = re.match(re.compile(r'^(\w+)('+conditionalRegex+')(.*)$'), line)
+        match = re.match(re.compile(r'^(\w+)(' + conditionalRegex + ')(.*)$'), line)
         if match:
             instruction = match.group(1)
             condition = match.group(2)
@@ -235,7 +276,7 @@ class Assembler:
             else:
                 # print(f"conditional split: {line} -> s{condition}, {instruction}{arg}")
                 # Do-if = ~skip-if
-                return [f"s {conditionalOpcode[condition]^1}", f"{instruction}{arg}"]
+                return [f"s {conditionalOpcode[condition] ^ 1}", f"{instruction}{arg}"]
         # alias instructions
         if action.actionName == "addi8":
             # put rac in RAT, setup acc, add
@@ -245,14 +286,20 @@ class Assembler:
         if action.actionName == "nop":
             # Done instead of addi 0 so that it doesn't interfere with carry
             return ["and rac"]
-        if action.actionName == "incsp":# inc stack pointer
-            return ["get RSL", "addi 1", "set RML", "set RSL",
-                    "get RSH", "addict 1", "set RMH", "set RSH"]
         if action.actionName == "push":
             # Increments then writes
             return ["set RAT",
                     "incsp",
                     "wb RAT", "get RAT"]
+        if action.actionName == "pushpc":
+            return ["push16 pc"]
+        if action.actionName == "push16":
+            return [
+                # Push Lower 8 bits
+                "clr", f"addi8 {int(action.arg/256)}", "push",
+                # Push Upper 8 bits
+                "clr", f"addi8 {action.arg%256}", "push",
+            ]
         if action.actionName == "pop":
             # Reads then decrements
             return ["get RSL", "set RML", "subi 1", "set RSL",
@@ -271,18 +318,20 @@ class Assembler:
                     "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "wb ACC",
 
                     "get RAT"]
-        if action.actionName == "popml":# Kills ACC
+        if action.actionName == "popml":  # Destroys ACC
             # Reads then decrements
             return [
-                    # Read upper
-                    "get RSL", "set RML", "subi 1", "set RSL",
-                    "get RSH", "set RMH", "subicf 1", "set RSH",
-                    "rb RAT",
-                    # Read lower
-                    "get RSL", "set RML", "subi 1", "set RSL",
-                    "get RSH", "set RMH", "subicf 1", "set RSH",
-                    "rb RMH", "set R3",
-                    "get RAT", "set RML", "set R4",]
+                # Read upper to RAT, decrement SP
+                "get RSL", "set RML", "subi 1", "set RSL",
+                "get RSH", "set RMH", "subicf 1", "set RSH",
+                "rb RAT",
+                # Read lower to RML, decrement SP
+                "get RSL", "set RML", "subi 1", "set RSL",
+                "get RSH", "set RMH", "subicf 1", "set RSH",
+                "rb RML",
+                # set RAT to RML
+                "get RAT", "set RMH"
+            ]
 
         return [line]
 
@@ -290,7 +339,8 @@ class Assembler:
         labels["pc"] = 0
         while labels["pc"] < len(lines):
             # Strip Comments
-            comment_index = max(lines[labels["pc"]].find("//"), lines[labels["pc"]].find("#"), lines[labels["pc"]].find(";"))
+            comment_index = max(lines[labels["pc"]].find("//"), lines[labels["pc"]].find("#"),
+                                lines[labels["pc"]].find(";"))
             if comment_index != -1:
                 lines[labels["pc"]] = lines[labels["pc"]][:comment_index]
             # Strip Whitespace
@@ -331,7 +381,7 @@ class Assembler:
 
     def __init__(self, filename, memory):
         self.program = bytearray(memory)
-        with open("Assembler/"+filename, 'r') as file:
+        with open("Assembler/" + filename, 'r') as file:
             filedata = file.read()
             lines = filedata.split('\n')
             print("PHASE 0 - strip comments")
@@ -359,9 +409,9 @@ class Assembler:
             print("PHASE 5 - Make Hex")
             prog_hex = self.program.hex()
 
-            numbytes =len(self.program)
+            numbytes = len(self.program)
             print(prog_hex)
-            print(str(numbytes) + "/65536 = " + str(round(numbytes/655.360, 3)) + "%")
+            print(str(numbytes) + "/65536 = " + str(round(numbytes / 655.360, 3)) + "%")
 
             with open(f"{Path.home()}/{filename}.hex", 'w') as out:
                 out.write("v3.0 hex bytes plain big-endian\r")
@@ -371,5 +421,5 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    # s = Assembler("code.asm", 0)
-    s = Assembler("multfunc.asm", 0)
+    Assembler("code.asm", 0)
+    # Assembler("beef.asm", 0)
