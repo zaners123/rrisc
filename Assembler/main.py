@@ -1,4 +1,5 @@
 import math
+import os
 import re
 import sys
 
@@ -243,11 +244,11 @@ class Assembler:
                     "jal",
                     f"{labelname}:"]
         # inc stack pointer
-        if action.actionName == "incsp":
+        if action.actionName == "incsp":  # Does not use RAT
             return ["get RSL", "addi 1", "set RML", "set RSL",
                     "get RSH", "addict 1", "set RMH", "set RSH"]
         # inc memory pointer
-        if action.actionName == "incmp":
+        if action.actionName == "incmp":  # Does not use RAT
             return ["get RML", "addi 1", "set RML",
                     "get RMH", "addict 1", "set RMH"]
         # addi memory pointer
@@ -265,7 +266,7 @@ class Assembler:
             return [f"setml {match.group(2)}", match.group(1)]
 
         # conditional instructions
-        match = re.match(re.compile(r'^(\w+)(' + conditionalRegex + ')(.*)$'), line)
+        match = re.match(re.compile(r'^(\w+)(' + conditionalRegex + r')(\W.*)?$'), line)
         if match:
             instruction = match.group(1)
             condition = match.group(2)
@@ -285,7 +286,7 @@ class Assembler:
         if action.actionName == "nop":
             # Done instead of addi 0 so that it doesn't interfere with carry
             return ["and rac"]
-        if action.actionName == "push":
+        if action.actionName == "push":  # Uses RAT
             # Increments then writes
             return ["set RAT",
                     "incsp",
@@ -297,7 +298,7 @@ class Assembler:
             return ["get RSL", "set RML", "subi 1", "set RSL",
                     "get RSH", "set RMH", "subicf 1", "set RSH",
                     "rb ACC"]
-        if action.actionName == "pushml": # TODO HOW IS THIS DIFFERENT FROM push16?
+        if action.actionName == "pushml":
             # Increments then writes
             return ["set RAT",
 
@@ -407,7 +408,8 @@ class Assembler:
             print(prog_hex)
             print(str(numbytes) + "/65536 = " + str(round(numbytes / 655.360, 3)) + "%")
 
-            with open(f"{Path.home()}/{filename}.hex", 'w') as out:
+            basename = os.path.basename(filename)
+            with open(f"{Path.home()}/{basename}.hex", 'w') as out:
                 out.write("v3.0 hex bytes plain big-endian\r")
                 out.write(prog_hex)
                 out.flush()
@@ -415,6 +417,6 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    Assembler("code.asm", 0)
-    # Assembler("code.asm", 0)
-    # Assembler("beef.asm", 0)
+    Assembler("test/test_all.asm", 0)
+    # Assembler("test_carry.asm", 0)
+    # Assembler("test_all.asm", 0)

@@ -1,17 +1,11 @@
-    setsl stack
 
-    addi 4
+    addi 5
     set R1
 
-loopy:
-
     jumpsr doubler
     jumpsr doubler
     jumpsr doubler
-
-    jmp loopy
-
-.buffer 320
+    jumpsr doubler ; TODO this is 39 bytes?
 
 doubler:
     get R1
@@ -19,4 +13,13 @@ doubler:
     set R1
     popml
     jal
+
+tripler:
+    get R1
+    add R0
+    add R0
+    set R1
+    popml
+    jal
+
 stack:

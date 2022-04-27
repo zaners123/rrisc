@@ -694,11 +694,11 @@ end TCL_Generic;
       <a name="trigger" val="falling"/>
     </comp>
     <comp lib="5" loc="(430,800)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@34d9cdde"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@32077783"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(430,950)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@27a90870"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@5404cf26"/>
     </comp>
     <comp lib="5" loc="(500,630)" name="Button">
       <a name="label" val="BRST"/>
@@ -795,6 +795,18 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="&lt;- Test around 1kHz"/>
     </comp>
+    <comp lib="8" loc="(392,609)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="34ns - 74xx283"/>
+    </comp>
+    <comp lib="8" loc="(397,146)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="TODO consider Harvard VS Von-Neumann"/>
+    </comp>
+    <comp lib="8" loc="(435,482)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="Has RST no WE, such as 74xx 273"/>
+    </comp>
     <comp lib="8" loc="(544,563)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="TODO is this necessary?"/>
@@ -802,6 +814,10 @@ end TCL_Generic;
     <comp lib="8" loc="(546,265)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="6ns"/>
+    </comp>
+    <comp lib="8" loc="(576,372)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="Has RST no WE"/>
     </comp>
     <comp lib="8" loc="(614,357)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
@@ -1075,10 +1091,7 @@ end TCL_Generic;
       <a name="labelfont" val="SansSerif bold 8"/>
       <a name="width" val="8"/>
     </comp>
-    <comp lib="0" loc="(1030,280)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="REGDATA"/>
-      <a name="labelfont" val="SansSerif bold 8"/>
+    <comp lib="0" loc="(1040,270)" name="Ground">
       <a name="width" val="8"/>
     </comp>
     <comp lib="0" loc="(1070,320)" name="Tunnel">
@@ -1232,14 +1245,6 @@ end TCL_Generic;
       <a name="incoming" val="4"/>
       <a name="spacing" val="2"/>
     </comp>
-    <comp lib="0" loc="(320,100)" name="Tunnel">
-      <a name="label" val="OPCODE_BIT1"/>
-      <a name="labelfont" val="SansSerif bold 8"/>
-    </comp>
-    <comp lib="0" loc="(320,120)" name="Tunnel">
-      <a name="label" val="OPCODE_LSB"/>
-      <a name="labelfont" val="SansSerif bold 8"/>
-    </comp>
     <comp lib="0" loc="(320,450)" name="Splitter">
       <a name="appear" val="right"/>
       <a name="bit0" val="1"/>
@@ -1263,6 +1268,14 @@ end TCL_Generic;
       <a name="bit7" val="0"/>
       <a name="facing" val="west"/>
       <a name="incoming" val="8"/>
+    </comp>
+    <comp lib="0" loc="(330,100)" name="Tunnel">
+      <a name="label" val="OPCODE_BIT1"/>
+      <a name="labelfont" val="SansSerif bold 8"/>
+    </comp>
+    <comp lib="0" loc="(330,120)" name="Tunnel">
+      <a name="label" val="OPCODE_LSB"/>
+      <a name="labelfont" val="SansSerif bold 8"/>
     </comp>
     <comp lib="0" loc="(330,450)" name="Tunnel">
       <a name="label" val="REG_OR_ONESIMM"/>
@@ -1302,20 +1315,20 @@ end TCL_Generic;
       <a name="labelfont" val="SansSerif bold 8"/>
       <a name="width" val="8"/>
     </comp>
-    <comp lib="0" loc="(540,140)" name="Tunnel">
+    <comp lib="0" loc="(530,100)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="OPCODE_BIT1"/>
       <a name="labelfont" val="SansSerif bold 8"/>
     </comp>
-    <comp lib="0" loc="(580,100)" name="Tunnel">
+    <comp lib="0" loc="(590,100)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="8"/>
+    </comp>
+    <comp lib="0" loc="(590,140)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="REG_OR_ZEROIMM"/>
       <a name="labelfont" val="SansSerif bold 8"/>
       <a name="width" val="8"/>
-    </comp>
-    <comp lib="0" loc="(590,140)" name="Bit Extender">
-      <a name="in_width" val="1"/>
-      <a name="out_width" val="8"/>
     </comp>
     <comp lib="0" loc="(60,730)" name="Splitter">
       <a name="fanout" val="8"/>
@@ -1376,11 +1389,6 @@ end TCL_Generic;
       <a name="label" val="REG_OR_ZEROIMM"/>
       <a name="labelfont" val="SansSerif bold 8"/>
       <a name="width" val="8"/>
-    </comp>
-    <comp lib="0" loc="(710,80)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="OPCODE_BIT1"/>
-      <a name="labelfont" val="SansSerif bold 8"/>
     </comp>
     <comp lib="0" loc="(720,170)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -1631,6 +1639,10 @@ end TCL_Generic;
       <a name="showInTab" val="true"/>
       <a name="width" val="1"/>
     </comp>
+    <comp lib="8" loc="(1022,296)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="RB/WB"/>
+    </comp>
     <comp lib="8" loc="(1076,171)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="11ns"/>
@@ -1671,6 +1683,22 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="Branch event and instruction"/>
     </comp>
+    <comp lib="8" loc="(655,244)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="GET/SET"/>
+    </comp>
+    <comp lib="8" loc="(674,345)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="ORI/OR"/>
+    </comp>
+    <comp lib="8" loc="(678,405)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="XORI/XOR"/>
+    </comp>
+    <comp lib="8" loc="(692,195)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="ANDI/AND"/>
+    </comp>
     <comp lib="8" loc="(693,761)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="~40ns"/>
@@ -1687,14 +1715,25 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="18.5ns"/>
     </comp>
+    <comp lib="8" loc="(908,103)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="ADDI/ADD/SUBI/SUB"/>
+    </comp>
+    <comp lib="8" loc="(941,560)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="Has RST or WE"/>
+    </comp>
+    <comp lib="8" loc="(983,270)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="SIF/JIF"/>
+    </comp>
     <wire from="(100,480)" to="(110,480)"/>
     <wire from="(100,660)" to="(100,670)"/>
     <wire from="(100,660)" to="(120,660)"/>
     <wire from="(1020,250)" to="(1030,250)"/>
     <wire from="(1030,240)" to="(1030,250)"/>
     <wire from="(1030,240)" to="(1050,240)"/>
-    <wire from="(1030,280)" to="(1040,280)"/>
-    <wire from="(1040,250)" to="(1040,280)"/>
+    <wire from="(1040,250)" to="(1040,270)"/>
     <wire from="(1040,250)" to="(1050,250)"/>
     <wire from="(1070,260)" to="(1070,280)"/>
     <wire from="(1070,320)" to="(1080,320)"/>
@@ -1772,6 +1811,8 @@ end TCL_Generic;
     <wire from="(280,710)" to="(300,710)"/>
     <wire from="(290,750)" to="(290,790)"/>
     <wire from="(290,750)" to="(300,750)"/>
+    <wire from="(320,100)" to="(330,100)"/>
+    <wire from="(320,120)" to="(330,120)"/>
     <wire from="(320,260)" to="(340,260)"/>
     <wire from="(320,450)" to="(330,450)"/>
     <wire from="(320,500)" to="(330,500)"/>
@@ -1792,12 +1833,15 @@ end TCL_Generic;
     <wire from="(40,300)" to="(100,300)"/>
     <wire from="(450,720)" to="(480,720)"/>
     <wire from="(50,730)" to="(60,730)"/>
+    <wire from="(530,100)" to="(540,100)"/>
     <wire from="(530,710)" to="(540,710)"/>
-    <wire from="(540,140)" to="(550,140)"/>
+    <wire from="(540,100)" to="(550,100)"/>
+    <wire from="(540,70)" to="(540,100)"/>
+    <wire from="(540,70)" to="(750,70)"/>
     <wire from="(540,710)" to="(540,770)"/>
     <wire from="(540,710)" to="(610,710)"/>
     <wire from="(540,770)" to="(610,770)"/>
-    <wire from="(580,100)" to="(610,100)"/>
+    <wire from="(590,100)" to="(610,100)"/>
     <wire from="(590,140)" to="(610,140)"/>
     <wire from="(590,810)" to="(610,810)"/>
     <wire from="(60,240)" to="(60,260)"/>
@@ -1813,7 +1857,6 @@ end TCL_Generic;
     <wire from="(710,100)" to="(730,100)"/>
     <wire from="(710,380)" to="(730,380)"/>
     <wire from="(710,420)" to="(730,420)"/>
-    <wire from="(710,80)" to="(750,80)"/>
     <wire from="(720,170)" to="(740,170)"/>
     <wire from="(720,210)" to="(740,210)"/>
     <wire from="(720,320)" to="(740,320)"/>
@@ -1824,7 +1867,7 @@ end TCL_Generic;
     <wire from="(740,530)" to="(840,530)"/>
     <wire from="(750,130)" to="(750,140)"/>
     <wire from="(750,140)" to="(760,140)"/>
-    <wire from="(750,80)" to="(750,90)"/>
+    <wire from="(750,70)" to="(750,90)"/>
     <wire from="(770,110)" to="(990,110)"/>
     <wire from="(770,260)" to="(770,280)"/>
     <wire from="(790,190)" to="(830,190)"/>
@@ -2088,6 +2131,10 @@ end TCL_Generic;
     <comp lib="8" loc="(554,163)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="6ns"/>
+    </comp>
+    <comp lib="8" loc="(582,124)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="Has WE no RST, such as 74xx 377"/>
     </comp>
     <wire from="(200,490)" to="(280,490)"/>
     <wire from="(230,400)" to="(260,400)"/>

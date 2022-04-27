@@ -1,3 +1,7 @@
+; This file tests all features of the computer.
+; While it runs, watch as it sets the memory register to specific words (BEEF, CAFE, BABE, etc)
+; For the loops at the end, if they get stuck in an infinite loop, the test failed.
+
 beef:
     rb RAC   ; Equals 0xE0
     addi 5   ; acc=E5
@@ -26,7 +30,7 @@ cafe:
     nop
     nop
     nop
-babe:
+loops:
     clr
     set CMP
     set DST
@@ -115,3 +119,11 @@ babe:
 
     set DST
     jne;8 = mod(1+2+3+4+5+6+7+8+9+10+11+12+13+14+15,16)
+aliastest:
+    setsl stack
+aliasloop:
+    addi 1
+    push
+    setml aliasloop
+    jal
+stack:
