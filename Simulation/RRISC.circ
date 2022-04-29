@@ -670,11 +670,11 @@ end TCL_Generic;
       <a name="trigger" val="falling"/>
     </comp>
     <comp lib="5" loc="(430,800)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@32077783"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@1a373a2d"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(430,950)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@5404cf26"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@6c25d4e5"/>
     </comp>
     <comp lib="5" loc="(500,630)" name="Button">
       <a name="label" val="BRST"/>
@@ -747,13 +747,17 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="10MHz = 100ns"/>
     </comp>
-    <comp lib="8" loc="(247,42)" name="Text">
+    <comp lib="8" loc="(246,25)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="40MHz = 25ns"/>
     </comp>
-    <comp lib="8" loc="(248,58)" name="Text">
+    <comp lib="8" loc="(249,40)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="30MHz = 33.3ns"/>
+    </comp>
+    <comp lib="8" loc="(251,57)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="25MHz = 40ns"/>
     </comp>
     <comp lib="8" loc="(271,197)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
@@ -795,13 +799,13 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="5ns 74as"/>
     </comp>
-    <comp lib="8" loc="(897,434)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="12ns"/>
-    </comp>
     <comp lib="8" loc="(930,211)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="~40ns"/>
+    </comp>
+    <comp lib="8" loc="(941,433)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="e&gt;c+30ns"/>
     </comp>
     <comp lib="8" loc="(992,735)" name="Text">
       <a name="font" val="SansSerif plain 14"/>
@@ -1885,9 +1889,13 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="Is actually 8 16:1 muxes"/>
     </comp>
+    <comp lib="8" loc="(254,284)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="7xx154"/>
+    </comp>
     <comp lib="8" loc="(267,311)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="6ns"/>
+      <a name="text" val="30ns"/>
     </comp>
     <comp lib="8" loc="(554,163)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
@@ -1896,6 +1904,10 @@ end TCL_Generic;
     <comp lib="8" loc="(582,124)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="Has WE no RST, such as 74xx 377"/>
+    </comp>
+    <comp lib="8" loc="(934,246)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="8x  7xx250"/>
     </comp>
     <wire from="(200,490)" to="(280,490)"/>
     <wire from="(230,400)" to="(260,400)"/>
