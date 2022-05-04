@@ -27,7 +27,7 @@ AR Path="/628499F1" Ref="UADD?"  Part="1"
 AR Path="/6282316B/628499F1" Ref="UADD1"  Part="1" 
 F 0 "UADD1" H 2700 4500 50  0000 C CNN
 F 1 "74LS283" H 3200 4500 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 3000 3850 50  0001 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 3000 3850 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74LS283" H 3000 3850 50  0001 C CNN
 	1    3000 3850
 	1    0    0    -1  
@@ -70,7 +70,7 @@ AR Path="/62849A0B" Ref="UADD?"  Part="1"
 AR Path="/6282316B/62849A0B" Ref="UADD2"  Part="1" 
 F 0 "UADD2" H 4500 4500 50  0000 C CNN
 F 1 "74LS283" H 5000 4500 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 4800 3850 50  0001 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 4800 3850 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74LS283" H 4800 3850 50  0001 C CNN
 	1    4800 3850
 	1    0    0    -1  
@@ -213,7 +213,7 @@ AR Path="/62849A5C" Ref="UADD?"  Part="1"
 AR Path="/6282316B/62849A5C" Ref="UADD3"  Part="1" 
 F 0 "UADD3" H 6300 4500 50  0000 C CNN
 F 1 "74LS283" H 6800 4500 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 6600 3850 50  0001 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 6600 3850 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74LS283" H 6600 3850 50  0001 C CNN
 	1    6600 3850
 	1    0    0    -1  
@@ -348,7 +348,7 @@ AR Path="/62863A6B" Ref="UADD?"  Part="1"
 AR Path="/6282316B/62863A6B" Ref="UADD4"  Part="1" 
 F 0 "UADD4" H 8100 4500 50  0000 C CNN
 F 1 "74LS283" H 8600 4500 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 8400 3850 50  0001 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 8400 3850 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74LS283" H 8400 3850 50  0001 C CNN
 	1    8400 3850
 	1    0    0    -1  

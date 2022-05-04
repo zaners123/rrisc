@@ -14,19 +14,6 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L 74xx:74LS257 UNEXTPC?
-U 1 1 629C7F9D
-P 2300 3050
-AR Path="/629C7F9D" Ref="UNEXTPC?"  Part="1" 
-AR Path="/629C34E6/629C7F9D" Ref="UMUX0"  Part="1" 
-F 0 "UMUX0" H 2000 3800 50  0000 C CNN
-F 1 "74LS257" H 2500 3800 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 2300 3050 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74LS257" H 2300 3050 50  0001 C CNN
-	1    2300 3050
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:VCC #PWR?
 U 1 1 629C7FA3
 P 2300 2150
@@ -276,19 +263,6 @@ F 3 "" H 4350 2150 50  0001 C CNN
 	1    4350 2150
 	1    0    0    -1  
 $EndComp
-$Comp
-L 74xx:74LS257 UMUX?
-U 1 1 62A15465
-P 4350 3050
-AR Path="/62A15465" Ref="UMUX?"  Part="1" 
-AR Path="/629C34E6/62A15465" Ref="UMUX1"  Part="1" 
-F 0 "UMUX1" H 4050 3800 50  0000 C CNN
-F 1 "74LS257" H 4550 3800 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 4350 3050 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74LS257" H 4350 3050 50  0001 C CNN
-	1    4350 3050
-	1    0    0    -1  
-$EndComp
 Connection ~ 3300 1800
 Connection ~ 3500 1700
 Connection ~ 3750 4450
@@ -304,11 +278,11 @@ Entry Wire Line
 Entry Wire Line
 	7400 2450 7500 2550
 Text Label 7050 3350 0    50   ~ 0
-OUT7
+OUT11
 Text Label 7050 3050 0    50   ~ 0
-OUT6
+OUT10
 Text Label 7050 2750 0    50   ~ 0
-OUT5
+OUT9
 Wire Wire Line
 	7050 3050 7400 3050
 Wire Wire Line
@@ -316,7 +290,7 @@ Wire Wire Line
 Wire Wire Line
 	7050 2450 7400 2450
 Text Label 7050 2450 0    50   ~ 0
-OUT4
+OUT8
 Wire Wire Line
 	7050 3350 7400 3350
 Wire Wire Line
@@ -401,19 +375,6 @@ F 3 "" H 6550 2150 50  0001 C CNN
 	1    6550 2150
 	1    0    0    -1  
 $EndComp
-$Comp
-L 74xx:74LS257 UMUX?
-U 1 1 62A3D5E6
-P 6550 3050
-AR Path="/62A3D5E6" Ref="UMUX?"  Part="1" 
-AR Path="/629C34E6/62A3D5E6" Ref="UMUX2"  Part="1" 
-F 0 "UMUX2" H 6250 3800 50  0000 C CNN
-F 1 "74LS257" H 6750 3800 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 6550 3050 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74LS257" H 6550 3050 50  0001 C CNN
-	1    6550 3050
-	1    0    0    -1  
-$EndComp
 Entry Wire Line
 	9600 3350 9700 3450
 Entry Wire Line
@@ -423,11 +384,11 @@ Entry Wire Line
 Entry Wire Line
 	9600 2450 9700 2550
 Text Label 9250 3350 0    50   ~ 0
-OUT7
+OUT15
 Text Label 9250 3050 0    50   ~ 0
-OUT6
+OUT14
 Text Label 9250 2750 0    50   ~ 0
-OUT5
+OUT13
 Wire Wire Line
 	9250 3050 9600 3050
 Wire Wire Line
@@ -435,7 +396,7 @@ Wire Wire Line
 Wire Wire Line
 	9250 2450 9600 2450
 Text Label 9250 2450 0    50   ~ 0
-OUT4
+OUT12
 Wire Wire Line
 	9250 3350 9600 3350
 Wire Wire Line
@@ -520,19 +481,6 @@ F 3 "" H 8750 2150 50  0001 C CNN
 	1    8750 2150
 	1    0    0    -1  
 $EndComp
-$Comp
-L 74xx:74LS257 UMUX?
-U 1 1 62A4288C
-P 8750 3050
-AR Path="/62A4288C" Ref="UMUX?"  Part="1" 
-AR Path="/629C34E6/62A4288C" Ref="UMUX3"  Part="1" 
-F 0 "UMUX3" H 8450 3800 50  0000 C CNN
-F 1 "74LS257" H 8950 3800 50  0000 C CNN
-F 2 "Package_SO:TSSOP-16_4.4x5mm_P0.65mm" H 8750 3050 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74LS257" H 8750 3050 50  0001 C CNN
-	1    8750 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8050 4300 5850 4300
 Connection ~ 3650 4300
@@ -594,6 +542,50 @@ Wire Notes Line
 	5200 5650 5400 5750
 Wire Notes Line
 	5200 6250 5400 6150
+$Comp
+L 74xx:74LS157 UMUX0
+U 1 1 626E121B
+P 2300 3050
+F 0 "UMUX0" H 2000 3800 50  0000 C CNN
+F 1 "74LS157" H 2500 3800 50  0000 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 2300 3050 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS157" H 2300 3050 50  0001 C CNN
+	1    2300 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74xx:74LS157 UMUX1
+U 1 1 626E4097
+P 4350 3050
+F 0 "UMUX1" H 4050 3800 50  0000 C CNN
+F 1 "74LS157" H 4550 3800 50  0000 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 4350 3050 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS157" H 4350 3050 50  0001 C CNN
+	1    4350 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74xx:74LS157 UMUX2
+U 1 1 626E53F5
+P 6550 3050
+F 0 "UMUX2" H 6250 3800 50  0000 C CNN
+F 1 "74LS157" H 6750 3800 50  0000 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 6550 3050 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS157" H 6550 3050 50  0001 C CNN
+	1    6550 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74xx:74LS157 UMUX3
+U 1 1 626E5F78
+P 8750 3050
+F 0 "UMUX3" H 8450 3800 50  0000 C CNN
+F 1 "74LS157" H 8950 3800 50  0000 C CNN
+F 2 "aFootprint:R-PDSO-G16" H 8750 3050 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS157" H 8750 3050 50  0001 C CNN
+	1    8750 3050
+	1    0    0    -1  
+$EndComp
 Wire Bus Line
 	3100 2550 3100 4700
 Wire Bus Line
