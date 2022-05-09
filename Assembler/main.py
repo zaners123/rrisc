@@ -417,6 +417,6 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    Assembler("test/test_all.asm", 0)
-    # Assembler("test_carry.asm", 0)
+    # Assembler("test/test_all.asm", 0)
+    Assembler("count.asm", 0)
     # Assembler("test_all.asm", 0)
