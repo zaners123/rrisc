@@ -686,11 +686,11 @@ end TCL_Generic;
       <a name="trigger" val="falling"/>
     </comp>
     <comp lib="5" loc="(430,800)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@25f33da7"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@774bd652"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(430,950)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@755dbbad"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@3e4a2f12"/>
     </comp>
     <comp lib="5" loc="(500,630)" name="Button">
       <a name="label" val="BRST"/>
@@ -830,6 +830,10 @@ end TCL_Generic;
     <comp lib="8" loc="(828,85)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="5ns 74as"/>
+    </comp>
+    <comp lib="8" loc="(830,379)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="text" val="24ns"/>
     </comp>
     <comp lib="8" loc="(898,418)" name="Text">
       <a name="font" val="SansSerif plain 12"/>

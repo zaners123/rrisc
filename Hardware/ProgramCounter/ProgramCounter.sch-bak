@@ -913,17 +913,6 @@ F 3 "~" H 2000 5350 50  0001 C CNN
 	1    2000 5350
 	1    0    0    -1  
 $EndComp
-$Comp
-L power:GND #PWR0135
-U 1 1 62836B7B
-P 3500 1900
-F 0 "#PWR0135" H 3500 1650 50  0001 C CNN
-F 1 "GND" V 3500 1700 50  0000 C CNN
-F 2 "" H 3500 1900 50  0001 C CNN
-F 3 "" H 3500 1900 50  0001 C CNN
-	1    3500 1900
-	0    1    1    0   
-$EndComp
 Text Notes 1850 2950 0    50   ~ 0
 55ns
 Text Notes 2550 2200 0    50   ~ 0
@@ -1764,25 +1753,8 @@ F 3 "~" H 3800 5350 50  0001 C CNN
 	1    3800 5350
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:C C17
-U 1 1 628C5C12
-P 4000 5350
-F 0 "C17" H 3950 5100 50  0000 L CNN
-F 1 ".1uF" H 3900 5000 50  0000 L CNN
-F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 4038 5200 50  0001 C CNN
-F 3 "~" H 4000 5350 50  0001 C CNN
-	1    4000 5350
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4000 5200 3800 5200
-Connection ~ 3800 5200
 Wire Wire Line
 	3800 5200 3600 5200
-Wire Wire Line
-	4000 5500 3800 5500
-Connection ~ 3800 5500
 Wire Wire Line
 	3800 5500 3600 5500
 Text Label 7350 2700 2    50   ~ 0
@@ -1793,6 +1765,44 @@ Text Label 7350 2800 2    50   ~ 0
 ~IS_JMP
 Text Label 7350 3000 2    50   ~ 0
 ~IS_SKIP
+Text Label 7350 2600 2    50   ~ 0
+PCEVENT
+Wire Wire Line
+	5550 1450 5550 2850
+Text Label 7350 3200 2    50   ~ 0
+cmpeq
+Text Label 7350 3100 2    50   ~ 0
+cmplt
+Text Label 7350 3300 2    50   ~ 0
+cmpgt
+$Comp
+L power:GND #PWR0135
+U 1 1 62913901
+P 7350 3500
+F 0 "#PWR0135" H 7350 3250 50  0001 C CNN
+F 1 "GND" V 7350 3300 50  0000 C CNN
+F 2 "" H 7350 3500 50  0001 C CNN
+F 3 "" H 7350 3500 50  0001 C CNN
+	1    7350 3500
+	0    1    1    0   
+$EndComp
+Text Label 3400 1900 2    50   ~ 0
+NEWCOND
+Wire Wire Line
+	3400 1900 3500 1900
+Text Label 7350 3400 2    50   ~ 0
+NEWCOND
+$Comp
+L Connector:Conn_01x10_Male J5
+U 1 1 62931A80
+P 7550 3100
+F 0 "J5" H 7522 2982 50  0000 R CNN
+F 1 "Conn_01x10_Male" H 7522 3073 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical" H 7550 3100 50  0001 C CNN
+F 3 "~" H 7550 3100 50  0001 C CNN
+	1    7550 3100
+	-1   0    0    1   
+$EndComp
 Wire Bus Line
 	2650 1250 2650 1550
 Wire Bus Line
@@ -1821,25 +1831,4 @@ Wire Bus Line
 	5100 6400 5100 7200
 Wire Bus Line
 	8950 1000 8950 4000
-Text Label 7350 2600 2    50   ~ 0
-PCEVENT
-Wire Wire Line
-	5550 1450 5550 2850
-Text Label 7350 3200 2    50   ~ 0
-cmpeq
-Text Label 7350 3100 2    50   ~ 0
-cmplt
-Text Label 7350 3300 2    50   ~ 0
-cmpgt
-$Comp
-L power:GND #PWR?
-U 1 1 62913901
-P 7350 3400
-F 0 "#PWR?" H 7350 3150 50  0001 C CNN
-F 1 "GND" V 7350 3200 50  0000 C CNN
-F 2 "" H 7350 3400 50  0001 C CNN
-F 3 "" H 7350 3400 50  0001 C CNN
-	1    7350 3400
-	0    1    1    0   
-$EndComp
 $EndSCHEMATC
