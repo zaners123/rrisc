@@ -329,7 +329,9 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
+    "pinned_footprint_libs": [
+      "000custom"
+    ],
     "pinned_symbol_libs": []
   },
   "meta": {

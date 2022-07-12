@@ -8,6 +8,7 @@
   )
 
 
+
   (bus_entry (at 90.17 58.42) (size -2.54 -2.54)
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 002edc84-ff9b-4f0a-b94e-6a54f758ad1d)
