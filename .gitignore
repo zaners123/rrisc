@@ -3,3 +3,5 @@ venv/
 .ignore*
 **/*.ignore*/
 **/*backups*/
+
+*.log
