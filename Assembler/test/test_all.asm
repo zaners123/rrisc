@@ -3,7 +3,7 @@
 ; For the loops at the end, if they get stuck in an infinite loop, the test failed.
 
 beef:
-    rb RAC   ; Equals 0xE0
+    xori 0xE ; Equals 0xE0
     addi 5   ; acc=E5
     xori 0xA ; acc=FE
     andi 0xF ; acc=EF
@@ -29,9 +29,11 @@ cafe:
     nop
     nop
     nop
-    nop
 loops:
     clr
+    nop
+    nop
+    nop
     set CMP
     set DST
     sal
@@ -39,7 +41,7 @@ loops:
     sne
     addi 1 ; ACC=1
     ; This whole section should never jump
-    setml babe
+    setml loops
     set CMP;cmp=1
     jev; if even
     jct; carry true

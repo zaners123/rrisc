@@ -26,23 +26,50 @@ conditionalOpcode = {
 }
 
 actionNameToOpcode = {
-    "addi": 0x0,
-    "add": 0x1,
-    "subi": 0x2,
-    "sub": 0x3,
-    "andi": 0x4,
-    "and": 0x5,
-    "get": 0x6,
-    "set": 0x7,
-    "ori": 0x8,
-    "or": 0x9,
-    "xori": 0xA,
-    "xor": 0xB,
-    "s": 0xC,
-    "j": 0xD,
-    "rb": 0xE,
-    "wb": 0xF,
+    "add": 0x0,
+    "addi": 0x1,
+
+    "sub": 0x2,
+    "subi": 0x3,
+
+    "s": 0x4,
+    "j": 0x5,
+
+    "xor": 0x6,
+    "xori": 0x7,
+
+    "and": 0x8,
+    "andi": 0x9,
+
+    "set": 0xA,
+    "rb": 0xB,
+
+    "get": 0xC,
+    "wb": 0xD,
+
+    "or": 0xE,
+    "ori": 0xF,
+
 }
+
+# actionNameToOpcode = {
+#     "addi": 0x0,
+#     "add": 0x1,
+#     "subi": 0x2,
+#     "sub": 0x3,
+#     "andi": 0x4,
+#     "and": 0x5,
+#     "get": 0x6,
+#     "set": 0x7,
+#     "ori": 0x8,
+#     "or": 0x9,
+#     "xori": 0xA,
+#     "xor": 0xB,
+#     "s": 0xC,
+#     "j": 0xD,
+#     "rb": 0xE,
+#     "wb": 0xF,
+# }
 
 registers = {
     "acc": 0x0, "rac": 0x0,
@@ -376,7 +403,7 @@ class Assembler:
 
     def __init__(self, filename, memory):
         self.program = bytearray(memory)
-        with open("Assembler/" + filename, 'r') as file:
+        with open(filename, 'r') as file:
             filedata = file.read()
             lines = filedata.split('\n')
             print("PHASE 0 - strip comments")
@@ -408,8 +435,9 @@ class Assembler:
             print(prog_hex)
             print(str(numbytes) + "/65536 = " + str(round(numbytes / 655.360, 3)) + "%")
 
-            basename = os.path.basename(filename)
-            with open(f"{Path.home()}/{basename}.hex", 'w') as out:
+            outfile = f"{Path.home()}/{os.path.basename(filename)}.hex"
+            print(f"Writing to {outfile}")
+            with open(outfile, 'w') as out:
                 out.write("v3.0 hex bytes plain big-endian\r")
                 out.write(prog_hex)
                 out.flush()
@@ -418,5 +446,5 @@ class Assembler:
 
 if __name__ == '__main__':
     # Assembler("test/test_all.asm", 0)
-    Assembler("count.asm", 0)
+    Assembler("test/test_all.asm", 0)
     # Assembler("test_all.asm", 0)
