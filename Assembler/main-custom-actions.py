@@ -1,7 +1,10 @@
+import abc
 import math
 import os
 import re
+import string
 import sys
+import typing
 
 from pathlib import Path
 
@@ -113,6 +116,7 @@ labelRegex = r'(?:[0-9]*[A-Za-z_]+[0-9]*)+'
 regexjmpreg = r'^(j(?:' + conditionalRegex + '))\s(' + labelRegex + ')$'
 
 labels = {}
+
 
 class Action:
     actionName = None
@@ -241,6 +245,36 @@ class Assembler:
 
     def unwrap_line(self, line: str):
 
+        class CustomAction:
+            name: string
+            func: callable
+            action: Action
+            assembler: Assembler
+
+            def getname(self):
+                return self.name
+
+            def call(self, assembler: Assembler, action: Action):
+                self.assembler = assembler
+                self.action = action
+
+                return self.func(self)
+
+            def __init__(self, name, func: callable):
+                self.name = name
+                self.func = func
+
+        customactions: typing.List[CustomAction] = []
+
+        def setml(cust: CustomAction):
+            return [
+                "set RAT",
+                "clr", f"xori {int(cust.action.arg / 256) % 16}", f"xori {int(cust.action.arg / 4096) % 16}", "set RMH",
+                "clr", f"xori {int(cust.action.arg) % 16}", f"xori {int(cust.action.arg / 16) % 16}", "set RML",
+                "get RAT"
+            ]
+        customactions.append(CustomAction("setml",setml))
+
         # Multiline things formatted as instructions
         action = Action.parse_action(line, 65536)
         if not action:
@@ -248,12 +282,7 @@ class Assembler:
 
         # set mem register from label
         if action.actionName == "setml":
-            return [
-                "set RAT",
-                "clr", f"xori {int(action.arg / 256) % 16}", f"xori {int(action.arg / 4096) % 16}", "set RMH",
-                "clr", f"xori {int(action.arg) % 16}", f"xori {int(action.arg / 16) % 16}", "set RML",
-                "get RAT"
-            ]
+
         if action.actionName == "setsl":
             # print(f"{line} -> {action.actionName},{action.arg}")
             return [
@@ -264,7 +293,7 @@ class Assembler:
             ]
         # Jump into subroutine
         if action.actionName == "jumpsr":
-            labelname = 'srid'+str(self.srid)
+            labelname = 'srid' + str(self.srid)
             self.srid = self.srid + 1
             return [f"pushml {labelname}",
                     f"setml {action.arg}",
@@ -445,5 +474,6 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    # Assembler("count.asm", 0)
+    # Assembler("test/test_all.asm", 0)
     Assembler("count.asm", 0)
+    # Assembler("test_all.asm", 0)
