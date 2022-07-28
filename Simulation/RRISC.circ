@@ -686,19 +686,19 @@ end TCL_Generic;
       <a name="label" val="BRST"/>
     </comp>
     <comp lib="5" loc="(720,1040)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@4ff6b39"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@efc2e0b"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(720,1180)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@11bdac25"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@3db9450f"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(720,1320)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@1d55b51e"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@1a6a13ec"/>
       <a name="labelvisible" val="true"/>
     </comp>
     <comp lib="5" loc="(720,1460)" name="7-Segment Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@69b1e0"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@2eab5563"/>
     </comp>
     <comp lib="8" loc="(1001,1068)" name="Text">
       <a name="font" val="SansSerif plain 14"/>
@@ -3202,9 +3202,9 @@ end TCL_Generic;
       <a name="font" val="SansSerif plain 12"/>
       <a name="text" val="WE = add/sub = opcode 0-3"/>
     </comp>
-    <comp lib="8" loc="(732,472)" name="Text">
+    <comp lib="8" loc="(370,436)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="-------------------------------------- Note: On physical ALU, all objects above this text line will happen on the motherboard --------------------------------------"/>
+      <a name="text" val="-------------------------------------- Note: On physical ALU, opcode parsing will be on motherboard--------------------------------------"/>
     </comp>
     <comp lib="8" loc="(903,406)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
