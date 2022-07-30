@@ -1,0 +1,124 @@
+** Drc report for /home/bean/ee/rrisc/Hardware/ALUMux/ALUMux.kicad_pcb **
+** Created on 2022-07-29 17:03:20 **
+
+** Found 29 DRC violations **
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(153.6550 mm, 140.9700 mm): Track [1] on B.Cu, length 2.1440 mm
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(168.9100 mm, 141.0350 mm): Track [1] on B.Cu, length 2.3909 mm
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(170.1800 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(177.8000 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(185.4200 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(175.2600 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(167.5800 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(172.7200 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(180.3400 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(188.0200 mm, 147.6750 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(182.8800 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(149.8450 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(160.0050 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(157.4650 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(147.3050 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(152.3850 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(162.5450 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(154.9250 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(165.1450 mm, 147.6100 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(144.7050 mm, 144.9500 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(129.5400 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(137.1600 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(132.0800 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(121.8600 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(139.7000 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(142.3000 mm, 147.6750 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(124.4600 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(134.6200 mm, 145.0150 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Rule: board setup constraints silk; Severity: warning
+    @(119.3800 mm, 147.3200 mm): Rect on Edge.Cuts
+    @(127.0000 mm, 145.0150 mm): Line on F.Silkscreen
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **
