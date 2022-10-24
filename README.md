@@ -25,22 +25,22 @@ Instructions are broken up into two parts. Here's the entire **Instruction Set A
  ID | Opcode  |  Description          |  Action
 ----|---------|-----------------------|-------------------------
  _  | 4 bits  | _                     | 4 bits
-0x0 | ADDI    | Add Immediate         | ACC = ACC + imm
-0x1 | ADD     | Add Register          | ACC = ACC + R\[imm\]
-0x2 | SUBI    | Subtract Immediate    | ACC = ACC - imm
-0x3 | SUB     | Subtract Register     | ACC = ACC - R\[imm\]
-0x4 | ANDI    | And Immediate         | ACC = ACC & imm
-0x5 | AND     | And Register          | ACC = ACC & R\[imm\]
-0x6 | GET     | Get Register          | ACC = R\[imm\]
-0x7 | SET     | Set Register          | R\[imm\] = ACC
-0x8 | ORI     | Or Immediate          | ACC = ACC \| imm
-0x9 | OR      | Or Register           | ACC = ACC \| R\[imm\]
-0xA | XORI    | Xor Immediate         | ACC = ACC ^ imm
-0xB | XOR     | Xor Register          | ACC = ACC ^ R\[imm\]
-0xC | SIF     | Conditional Skip      | skip if eval(imm)
-0xD | JIF     | Conditional Jump      | jump to MEM if eval(imm)
-0xE | RB      | Read Byte from Memory | R\[imm\] = MEMORY\[MEM\]
-0xF | WB      | Write byte to memory  | MEMORY\[MEM\] = R\[imm\]
+0x0 | ADD     | Add Register           |
+0x1 | ADDI    | Add Immediate           |
+0x2 | SUB     |            |
+0x3 | SUBI    |            |
+0x4 | SKIP    |            |
+0x5 | JUMP    |            |
+0x6 | XOR     |            |
+0x7 | XORI    |            |
+0x8 | AND     |            |
+0x9 | ANDI    |            |
+0xA | SET     |            |
+0xB | RB      |            |
+0xC | GET     |            |
+0xD | WB      |            |
+0xE | OR      |            |
+0xF | ORI     |            |
 
 # Assembler
 

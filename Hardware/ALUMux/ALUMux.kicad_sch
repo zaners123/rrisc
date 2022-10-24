@@ -6375,7 +6375,7 @@
     (property "Reference" "UADD1" (id 0) (at 206.4894 125.8402 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "74LS283" (id 1) (at 206.4894 128.3771 0)
+    (property "Value" "74x283" (id 1) (at 206.4894 128.3771 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "000custom:D_R-PDSO-G16" (id 2) (at 204.47 144.78 0)
@@ -6426,7 +6426,7 @@
     (property "Reference" "UADD2" (id 0) (at 206.4894 174.1002 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "74LS283" (id 1) (at 206.4894 176.6371 0)
+    (property "Value" "74x283" (id 1) (at 206.4894 176.6371 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "000custom:D_R-PDSO-G16" (id 2) (at 204.47 193.04 0)
@@ -7821,10 +7821,10 @@
       (reference "U4MUX8") (unit 1) (value "74x153") (footprint "000custom:D_R-PDSO-G16")
     )
     (path "/4ade501f-7945-4408-b9f3-a017d671fd70"
-      (reference "UADD1") (unit 1) (value "74LS283") (footprint "000custom:D_R-PDSO-G16")
+      (reference "UADD1") (unit 1) (value "74x283") (footprint "000custom:D_R-PDSO-G16")
     )
     (path "/4d46bdbd-ddf8-486c-9853-c2064c58ba4c"
-      (reference "UADD2") (unit 1) (value "74LS283") (footprint "000custom:D_R-PDSO-G16")
+      (reference "UADD2") (unit 1) (value "74x283") (footprint "000custom:D_R-PDSO-G16")
     )
     (path "/878e0ab8-92ba-4ac3-8001-5028a1e60962"
       (reference "UAND1") (unit 1) (value "74x08") (footprint "000custom:D_R-PDSO-G14")
