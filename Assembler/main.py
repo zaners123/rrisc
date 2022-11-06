@@ -5,6 +5,16 @@ import sys
 
 from pathlib import Path
 
+"""
+0 - Always
+1 - NotZero
+2 - Odd
+3 - Negative
+4 - ?
+5 - ?
+6 - ?
+7 - ?
+"""
 conditionalOpcode = {
     "al": 0x0,
     "mp": 0x0,
@@ -51,25 +61,6 @@ actionNameToOpcode = {
     "ori": 0xF,
 
 }
-
-# actionNameToOpcode = {
-#     "addi": 0x0,
-#     "add": 0x1,
-#     "subi": 0x2,
-#     "sub": 0x3,
-#     "andi": 0x4,
-#     "and": 0x5,
-#     "get": 0x6,
-#     "set": 0x7,
-#     "ori": 0x8,
-#     "or": 0x9,
-#     "xori": 0xA,
-#     "xor": 0xB,
-#     "s": 0xC,
-#     "j": 0xD,
-#     "rb": 0xE,
-#     "wb": 0xF,
-# }
 
 registers = {
     "acc": 0x0, "rac": 0x0,
@@ -232,7 +223,10 @@ class Assembler:
     srid = 0
 
     def process_action(self, action):
-        print(f"{action.actionName}@{hex(labels['pc'])} -> {action.to_bytes().hex()}")
+        hexstr = action.to_bytes().hex()
+        s = ["add","addi","sub","subi","s","j","xor","xori","and","andi","set","rb","get","wb","or","ori"][int(hexstr[1],16)]
+
+        print(f"{action.to_bytes().hex()}@{hex(labels['pc'])} -> {s}")
         self.program += action.to_bytes()
         pass
 
@@ -405,6 +399,7 @@ class Assembler:
         self.program = bytearray(memory)
         with open(filename, 'r') as file:
             filedata = file.read()
+            filedata = f"nop\n{filedata}"
             lines = filedata.split('\n')
             print("PHASE 0 - strip comments")
             # Strip comments
@@ -446,4 +441,3 @@ class Assembler:
 
 if __name__ == '__main__':
     Assembler("test/test_all.asm", 0)
-    # Assembler("count.asm", 0)

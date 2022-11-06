@@ -235,8 +235,8 @@ class Assembler:
     pc = 0
     srid = 0
 
-    def process_action(self, action):
-        print(f"{action.actionName}@{hex(labels['pc'])} -> {action.to_bytes().hex()}")
+    def process_action(self, action: Action):
+        print(f"{action.to_bytes().hex()}@{hex(labels['pc'])} -> {action.actionName}")
         self.program += action.to_bytes()
         pass
 
