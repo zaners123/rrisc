@@ -2,6 +2,7 @@ package net.datadeer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import static net.datadeer.CommandFactory.OPCODE.*;
@@ -51,7 +52,7 @@ public class CommandFactory {
         RSH(0xA),
         RSL(0xB),
         RCMP(0xC),CMP(0xC),
-        RDST(0xD),DST(0xD),
+        RDST(0xD),DST(0xD),//TODO remove
         RMH(0xE),
         RML(0xF);
 
@@ -172,6 +173,26 @@ public class CommandFactory {
 
         Command op = findOpcodeCommand(line);
         if (op != null) return op;
+
+        //Is command a label
+        if (line.endsWith(":")) {
+            //TODO deal with labels by using Label.java to hold a hashmap.
+            HashMap<String,String> definitions = new HashMap<>();
+            int addr = 0;
+            for (CommandLine cl : lines) {
+                if (cl == null || cl.line.isEmpty()){
+                    continue;
+                }
+                //Line is a label
+                if (cl.line.endsWith(":")) {
+                    definitions.put(cl.line.substring(0,cl.line.length()-1), String.valueOf(addr));
+                } else {
+                    Command c = CommandFactory.create(cl.line);
+                    if (c != null) addr += c.toNibbles().length/2;
+                }
+            }
+            return null;
+        }
 
         //Command isn't an opcode, try a converted command
         for (Macro m : Macro.MACROS) {

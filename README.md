@@ -22,25 +22,40 @@ It has 64Kb of RAM and all 16 instructions follow a quick 3-stage IF/EX/WB cycle
 
 Instructions are broken up into two parts. Here's the entire **Instruction Set Architecture**:
 
- ID | Opcode  |  Description          |  Action
-----|---------|-----------------------|-------------------------
- _  | 4 bits  | _                     | 4 bits
-0x0 | ADD     | Add Register           |
-0x1 | ADDI    | Add Immediate           |
-0x2 | SUB     |            |
-0x3 | SUBI    |            |
-0x4 | SKIP    |            |
-0x5 | JUMP    |            |
-0x6 | XOR     |            |
-0x7 | XORI    |            |
-0x8 | AND     |            |
-0x9 | ANDI    |            |
-0xA | SET     |            |
-0xB | RB      |            |
-0xC | GET     |            |
-0xD | WB      |            |
-0xE | OR      |            |
-0xF | ORI     |            |
+ ID | Opcode |  Description           |  Argument Type
+----|--------|------------------------|-------------------------
+ _  | 4 bits | _                      | 4 bits
+0x0 | ADD    | Add to R0              | Register(1)
+0x1 | ADDI   | Add to R0              | Immediate(2)       
+0x2 | SUB    | Subtract from R0       | Register(1)   
+0x3 | SUBI   | Subtract from R0       | Immediate(2)  
+0x4 | SKIP   | Skip next instruction  | Condition(3)  
+0x5 | JUMP   | Jump to MEM            | Condition(3)  
+0x6 | XOR    | Xor                    | Register(1)        
+0x7 | XORI   | Xor                    | Immediate(2)       
+0x8 | AND    | And                    | Register(1)        
+0x9 | ANDI   | And                    | Immediate(2)       
+0xA | SET    | Move ACC to Reg        | Register(1)
+0xB | RB     | Read from memory to Reg| Register(1)
+0xC | GET    | Move Reg to ACC        | Register(1)
+0xD | WB     | Write from reg to memory|Register(1)
+0xE | OR     |                        |
+0xF | ORI    |                        |
+
+## Register(1)
+The last 4 bits of this argument point to one of the 16 registers.
+
+ACC (AKA R0) is the accumulator register.
+
+R1-RC General Purpose Registers.
+
+RMH,RML point in memory (Register Memory High, Register Memory Low).
+
+RCMP is used in conditional operations<sup>[3](3)</sup>
+
+## Immediate(2)
+
+## Condition(3)
 
 # Assembler
 

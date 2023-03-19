@@ -5,3 +5,7 @@ venv/
 **/*backups*/
 
 *.log
+*.class
+*.ignore*
+*.hex
+*.ods

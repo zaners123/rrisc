@@ -1,9 +1,6 @@
 package net.datadeer;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
@@ -27,12 +24,18 @@ public class Assembler {
         return lines;
     }
 
-    public static void main(String[] args) {
-        String filein = "test_all.asm";
 
-        ArrayList<CommandLine> lines = fetchLinesFromFile(filein);
-        //TODO add preprocessor for things like labels
-        lines = Preprocessor.preprocessLines(lines);
+
+    public static void main(String[] args) {
+//        File filein = new File("asm/test_prepreocessor.asm");
+        File filein = new File("asm/test_segdisplay.asm");
+
+        File c = Preprocessor.runCPreprocessor(filein);
+
+        ArrayList<CommandLine> lines = fetchLinesFromFile(c.getAbsolutePath());
+
+        lines = Preprocessor.linesRemoveComments(lines);
+
         ArrayList<Command> commands = linesToCommands(lines);
         commandsToHexfile(filein+".hex", commands);
 
