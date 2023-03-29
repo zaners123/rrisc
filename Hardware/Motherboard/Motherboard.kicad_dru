@@ -1,0 +1,68 @@
+(version 1)
+
+(rule "JLC Pad to Track Clearance"
+    (constraint clearance (min 0.2mm))
+    (condition "A.Type == 'Pad' && B.Type == 'Track'"))
+
+(rule "JLC NPTH to Track Clearance"
+    (constraint clearance (min 0.254mm))
+    (condition "A.Type == 'Via' && A.Pad_Type == 'NPTH' && B.Type == 'Track'"))
+
+
+(rule "JLC PTH to Track Clearance"
+    (constraint clearance (min 0.33mm))
+    (condition "A.Type == 'Via' && A.Pad_Type == 'Through-hole' && B.Type == 'Track'"))
+
+(rule "JLC Via to Track Clearance"
+    (constraint clearance (min 0.254mm))
+    (condition "A.Type == 'Via' && A.Pad_Type != 'Through-hole' && A.Pad_Type != 'SMD' && B.Type == 'Track'"))
+
+
+
+(rule "JLC Pad to Pad Clearance diff nets w hole"
+    (constraint clearance (min 0.5mm))
+    (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Net != B.Net"))
+
+(rule "JLC Pad to Pad Clearance diff nets no hole"
+    (constraint clearance (min 0.127mm))
+    (condition "A.Pad_Type == 'SMD' && B.Pad_Type == 'SMD' && A.Net != B.Net"))
+
+
+
+(rule "JLC Hole to Hole Clearance diff net"
+    (constraint hole_clearance (min 0.5mm))
+    (condition "A.Type == 'Via' && B.Type == 'Via' && A.Net != B.Net"))
+
+
+(rule "Distance between Vias of Same Nets"
+    (constraint hole_to_hole (min 0.254mm))
+    (condition "A.Type == 'Via' && B.Type == 'Via' && A.Net == B.Net"))
+
+
+(rule "JLC Min Drill Hole Size"
+    (constraint hole_size (min 0.2mm)))
+
+(rule "JLC Max Drill Hole Size"
+    (constraint hole_size (max 6.3mm)))
+
+(rule "JLC Via Diameter"
+    (constraint via_diameter (min 0.45mm))
+    (condition "A.Type == 'Via'"))
+
+(rule "JLC Min Annular Ring"
+    (constraint annular_width (min 0.13mm))
+	(condition "A.Pad_Type != 'Through-hole'"))
+
+(rule "JLC Min Annular Ring PTH"
+    (constraint annular_width (min 0.3mm))
+	(condition "A.Type == 'Via' && A.Pad_Type == 'Through-hole'"))
+
+
+
+
+
+
+
+
+
+

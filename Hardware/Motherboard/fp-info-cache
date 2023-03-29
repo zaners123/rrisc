@@ -1,4 +1,4 @@
-16792026413324
+20156395560976
 000custom
 90-0150
 
@@ -6,6 +6,13 @@
 0
 9
 9
+000custom
+BarrelJack_Horizontal
+DC Barrel Jack
+Power Jack
+0
+3
+3
 000custom
 D_R-PDSO-G14
 
@@ -41,6 +48,13 @@ R-PDSO-G16-LONG
 0
 16
 16
+000custom
+SODFL2512X75N
+SOD323F
+Zener Diode
+0
+2
+2
 000custom
 SOIC16-ONSEMI_751B-05_K
 
