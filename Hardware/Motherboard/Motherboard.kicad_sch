@@ -3778,7 +3778,6 @@
     )
   )
 
-
   (junction (at 43.18 185.42) (diameter 0) (color 0 0 0 0)
     (uuid 01b0f739-1d71-4038-ac4d-057ee5102d7f)
   )
@@ -10494,6 +10493,10 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 2364b5ff-e4d3-4cc7-9d20-478b229b067b)
   )
+  (label "CLK_INT" (at 83.82 176.53 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 236dbeb8-ac81-43bd-becd-410260288644)
+  )
   (label "CARRY" (at 101.6 266.7 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 239e4cef-c096-4779-b2bf-dbf5b9ac5f84)
@@ -13046,7 +13049,7 @@
     (property "Value" "PowerBarrel" (at 25.4 97.8971 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Connector_BarrelJack:BarrelJack_Horizontal" (at 26.67 103.886 0)
+    (property "Footprint" "000custom:BarrelJack_Horizontal" (at 26.67 103.886 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 26.67 103.886 0)

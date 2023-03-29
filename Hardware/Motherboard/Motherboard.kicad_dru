@@ -30,7 +30,7 @@
 
 
 (rule "JLC Hole to Hole Clearance diff net"
-    (constraint hole_clearance (min 0.5mm))
+    (constraint hole_to_hole (min 0.5mm))
     (condition "A.Type == 'Via' && B.Type == 'Via' && A.Net != B.Net"))
 
 
