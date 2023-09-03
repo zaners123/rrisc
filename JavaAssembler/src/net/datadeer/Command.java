@@ -2,13 +2,17 @@ package net.datadeer;
 
 abstract class Command {
 
-    CommandLine cl;
+    String lineRaw;
 
     Command() {}
 
     public String getLineRaw() {
-        return cl.lineRaw;
+        return lineRaw;
     }
 
     public abstract Nibble[] toNibbles();
+
+    protected int getNumBytes() {
+        return toNibbles().length/2;
+    }
 }

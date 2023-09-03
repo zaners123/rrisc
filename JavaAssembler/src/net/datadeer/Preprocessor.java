@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class Preprocessor {
-
-
+class Preprocessor {
 
     /**@param line A raw line from the user
      * @return The input line, modified in these ways:
@@ -25,11 +23,8 @@ public class Preprocessor {
         return line;
     }
 
-    public static ArrayList<CommandLine> linesRemoveComments(ArrayList<CommandLine> lines) {
-
-        //Clean lines
-        for (CommandLine cl : lines) cl.line = lineRemoveComments(cl.lineRaw);
-        return lines;
+    public static void linesRemoveComments(ArrayList<String> lines) {
+        lines.replaceAll(Preprocessor::lineRemoveComments);
     }
 
     public static File runCPreprocessor(File filein) {

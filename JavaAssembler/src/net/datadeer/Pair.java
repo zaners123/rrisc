@@ -1,6 +1,6 @@
 package net.datadeer;
 
-public class Pair <T> {
+class Pair <T> {
     public final String a;
     public final String b;
 

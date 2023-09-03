@@ -1,6 +1,6 @@
 package net.datadeer;
 
-public abstract class Argument {
+abstract class Argument {
     String str;
 
     Argument(String str) {
