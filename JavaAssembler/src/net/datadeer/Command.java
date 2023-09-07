@@ -10,9 +10,9 @@ abstract class Command {
         return lineRaw;
     }
 
-    public abstract Nibble[] toNibbles();
+    public abstract Nibble[] toNibbles(LabelManager lm);
 
-    protected int getNumBytes() {
-        return toNibbles().length/2;
+    protected int getNumBytes(LabelManager lm) {
+        return toNibbles(lm).length/2;
     }
 }

@@ -1,10 +1,5 @@
 package net.datadeer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.regex.Pattern;
-
 import static net.datadeer.CommandFactory.OPCODE.*;
 
 class CommandFactory {
@@ -12,7 +7,8 @@ class CommandFactory {
     public static final OPCODE[] REGISTER_OPCODES = new OPCODE[]{ADD, SUB, XOR, AND, OR, SET, GET,RB,WB};
     public static final OPCODE[] CONDITION_OPCODES = new OPCODE[]{S,J};
 
-    private static final boolean ALLOW_MACROS = false;
+    private static final boolean ALLOW_MACROS = true;
+    private static final boolean ALLOW_ANYTHING_CONDITIONALS = false;
 
     enum OPCODE {
         ADD(0x0),ADDI(0x1),
@@ -92,81 +88,9 @@ class CommandFactory {
             this(op, reg.getNibble());
         }
 
-        public Nibble[] toNibbles() {return new Nibble[]{op.getNibble(),arg};}
+        public Nibble[] toNibbles(LabelManager lm) {return new Nibble[]{op.getNibble(),arg};}
     }
 
-    /** A group of commands. This could be as simple as a macro, or as complex as the full assembly file*/
-    protected static class CommandGroup extends Command {
-        private final Command[] commands;
-        private int address;
-
-        public CommandGroup(Command[] commands, int address) {
-            this.commands = commands;
-            this.address = address;
-        }
-
-        public static CommandGroup create(Command[] commands) {
-            return new CommandGroup(commands, 0);
-        }
-
-        public static CommandGroup create(String[] commands) {
-            return create(commands, 0);
-        }
-        public static CommandGroup create(String[] commands, int address) {
-            Command[] commandArr = new Command[commands.length];
-            for (int i=0;i<commands.length;i++) {
-                try {
-                    commandArr[i] = CommandFactory.create(commands[i], address);
-                    if (commandArr[i] != null) commandArr[i].lineRaw = commands[i];
-                } catch (RuntimeException re) {
-                    re.printStackTrace();
-                    throw new RuntimeException("Malformed Command '"+commands[i]+"'.");
-                }
-                if (commandArr[i] != null) address += commandArr[i].getNumBytes();
-            }
-            return new CommandGroup(commandArr, address);
-        }
-
-        @Override
-        public Nibble[] toNibbles() {
-            ArrayList<Nibble> ret = new ArrayList<>();
-            for (Command c : commands) {
-                if (c == null) continue;
-                Collections.addAll(ret, c.toNibbles());
-            }
-            return ret.toArray(new Nibble[]{});
-        }
-
-        public Command[] getCommands() {
-            return commands;
-        }
-
-    }
-
-    /**
-     * @param str The input string to be converted to an int
-     *            Can be a number: hex(0x5), int(5), bin(0b101)
-     *            Can be a label
-     * @return The integer from the parsed string
-     * */
-    static int stringToNumber(String str) {
-        //test for number
-        if (Pattern.matches("0x[0-9a-zA-Z]+", str)) return Integer.valueOf(str.substring(2),16);
-        if (Pattern.matches("0b[01]+",str)) return Integer.valueOf(str.substring(2),2);
-        if (Pattern.matches("[0-9]+",str)) return Integer.parseInt(str);
-        //test for label
-        if (LabelManager.hasLabel(str)) {
-            return LabelManager.getLabel(str);
-        }
-        //exception
-        throw new RuntimeException("Unknown Immediate \""+str+"\"");
-    }
-
-    static Nibble stringToNibble(String str) {
-        int number = stringToNumber(str);
-        if (number<0 || number>15) throw new RuntimeException("Immediate out of range 0<x<16: "+number);
-        return new Nibble(number);
-    }
 
     public static Command findOpcodeCommand(String line) {
         // Find Command
@@ -178,7 +102,7 @@ class CommandFactory {
             //Immediate ops "addi 5"
             for (OPCODE o : IMMEDIATE_OPCODES) {
                 if (o.name().toLowerCase().equals(prespace)) {
-                    return new OpcodeCommand(o, stringToNibble(postspace));
+                    return new OpcodeCommand(o, Util.constToNibble(postspace));
                 }
             }
             //Register ops "add R3"
@@ -202,7 +126,22 @@ class CommandFactory {
         return null;
     }
 
-    public static Command create(String line, int address) {
+    public static class LabelCommand extends Command {
+        private final String name;
+
+        LabelCommand(String name) {
+            this.name = name;
+        }
+        @Override
+        public Nibble[] toNibbles(LabelManager lm) {
+            return new Nibble[0];
+        }
+        public String getName() {
+            return name;
+        }
+    }
+
+    public static Command create(String line) {
 
         int indexFirstSpace = line.indexOf(' ');
         String prespace =  indexFirstSpace==-1?line:line.substring(0, indexFirstSpace);
@@ -214,17 +153,19 @@ class CommandFactory {
 
         //Is command a label
         if (line.endsWith(":")) {
-            LabelManager.addLabel(line.substring(0,line.length()-1), address);
-            return null;
+            String labelName = line.substring(0,line.length()-1);
+            return new LabelCommand(labelName);
         }
 
-        //Command isn't an opcode, try a converted command
-        if (ALLOW_MACROS) for (Macro m : Macro.MACROS) {
-            if (prespace.equals(m.getName())) return m.getCommand(postspace);
+        //Command isn't an opcode, try a macro
+        if (ALLOW_MACROS) {
+            if (Macro.doesMacroTemplateExist(prespace)) {
+                return new Macro(prespace,postspace);
+            }
         }
 
         //Commands that end in condition codes
-        for (CONDITION c : CONDITION.values()) {
+        if (ALLOW_ANYTHING_CONDITIONALS) for (CONDITION c : CONDITION.values()) {
             if (prespace.endsWith(c.name().toLowerCase())) {
                 //This is an inverted switch followed by an opcode command
                 Command cmd = findOpcodeCommand(prespace.substring(0,prespace.length()-2)+" "+postspace);

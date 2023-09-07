@@ -1,63 +1,84 @@
 package net.datadeer;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static net.datadeer.CommandFactory.OPCODE.*;
 import static net.datadeer.CommandFactory.REGISTER.*;
-import static net.datadeer.CommandFactory.stringToNumber;
 
-public class Macro {
-    final static Macro[] MACROS = {
+public class Macro extends Command {
+    private final MacroTemplate template;
+    private final String postspace;
 
-            new Macro("addi8",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "set RAT", "clr", "ori "+(stringToNumber(a)%16),"ori "+(stringToNumber(a)/16), "add RAT"
-            })),
+    public Macro(String prespace, String postspace) {
+        this.template = MacroTemplate.getMacroTemplate(prespace);
+        this.postspace = postspace;
+    }
+    private static class MacroTemplate {
+        final static MacroTemplate[] MACROS = {
+                new MacroTemplate("addi8", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT", "clr", "ori " + (lm.stringToNumber(a) % 16), "ori " + (lm.stringToNumber(a) / 16), "add RAT"
+                })),
+                new MacroTemplate("nop", (lm, a) -> new CommandFactory.OpcodeCommand(AND, ACC)),
+                new MacroTemplate("clr", (lm, a) -> new CommandFactory.OpcodeCommand(XOR, ACC)),
+                new MacroTemplate("setml", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT",
+                        "clr", "xori " + (lm.stringToNumber(a) / 256) % 16, "xori " + (lm.stringToNumber(a) / 4096) % 16, "set RMH",
+                        "clr", "xori " + (lm.stringToNumber(a) % 16), "xori " + (lm.stringToNumber(a) / 16) % 16, "set RML",
+                        "get RAT"
+                })),
+                new MacroTemplate("setsl", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT",
+                        "clr", "xori " + (lm.stringToNumber(a) / 256) % 16, "xori " + (lm.stringToNumber(a) / 4096) % 16, "set RSH",
+                        "clr", "xori " + (lm.stringToNumber(a) % 16), "xori " + (lm.stringToNumber(a) / 16) % 16, "set RSL",
+                        "get RAT"
+                })),
+                new MacroTemplate("push", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT",
+                        "incsp",
+                        "wb RAT",
+                        "get RAT"
+                })),
+                new MacroTemplate("incsp", (lm, a) -> CommandGroup.create(new String[]{
+                        "get RSL", "addi 1", "set RML", "set RSL",
+                        "get RSH", "addict 1", "set RMH", "set RSH"
+                })),
+                new MacroTemplate("push", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT",
+                        "incsp",
+                        "wb RAT", "get RAT"
+                })),
+        };
+        private final String name;
+        private final BiFunction<LabelManager, String, Command> argToMacro;
 
-            new Macro("nop",(a) -> new CommandFactory.OpcodeCommand(AND, ACC)),
-            new Macro("clr",(a) -> new CommandFactory.OpcodeCommand(XOR, ACC)),
+        private MacroTemplate(String name, BiFunction<LabelManager, String, Command> argToMacro) {
+            this.name = name;
+            this.argToMacro = argToMacro;
+        }
 
-            new Macro("setml",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "set RAT",
-                    "clr","xori "+(stringToNumber(a)/256)%16, "xori "+(stringToNumber(a)/4096)%16, "set RMH",
-                    "clr","xori "+(stringToNumber(a)%16), "xori "+(stringToNumber(a)/16)%16, "set RML",
-                    "get RAT"
-            })),
-            new Macro("setsl",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "set RAT",
-                    "clr","xori "+(stringToNumber(a)/256)%16, "xori "+(stringToNumber(a)/4096)%16, "set RSH",
-                    "clr","xori "+(stringToNumber(a)%16), "xori "+(stringToNumber(a)/16)%16, "set RSL",
-                    "get RAT"
-            })),
+        protected String getName() {
+            return name;
+        }
 
-            new Macro("push",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "set RAT",
-                    "incsp",
-                    "wb RAT",
-                    "get RAT"
-            })),
-            new Macro("incsp",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "get RSL", "addi 1", "set RML", "set RSL",
-                    "get RSH", "addict 1", "set RMH", "set RSH"
-            })),
-            new Macro("push",(a) -> CommandFactory.CommandGroup.create(new String[]{
-                    "set RAT",
-                    "incsp",
-                    "wb RAT", "get RAT"
-            })),
-    };
-    private final String name;
-    private final Function<String, Command> argToMacro;
+        protected Command generateCommand(LabelManager lm, String args) {
+            return argToMacro.apply(lm, args);
+        }
 
-    Macro(String name, Function<String, Command> argToMacro) {
-        this.name = name;
-        this.argToMacro = argToMacro;
+        protected static MacroTemplate getMacroTemplate(String name) {
+            for (MacroTemplate m : MacroTemplate.MACROS) {
+                if (name.equals(m.getName())) return m;
+            }
+            return null;
+        }
     }
 
-    public String getName() {
-        return name;
+    public static boolean doesMacroTemplateExist(String name) {
+        return MacroTemplate.getMacroTemplate(name) != null;
     }
 
-    public Command getCommand(String args) {
-        return argToMacro.apply(args);
+    @Override
+    public Nibble[] toNibbles(LabelManager lm) {
+        return template.generateCommand(lm,postspace).toNibbles(lm);
     }
+
 }
