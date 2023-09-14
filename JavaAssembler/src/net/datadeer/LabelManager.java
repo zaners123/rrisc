@@ -56,8 +56,8 @@ class LabelManager {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        labels.forEach((name,addr) -> sb.append(Integer.toString(addr,16)).append(":\t").append(name).append('\n'));
+        StringBuilder sb = new StringBuilder("Label Manager:\n");
+        labels.forEach((name,addr) -> sb.append('\t').append(Integer.toString(addr,16)).append(":\t").append(name).append('\n'));
         return sb.toString();
     }
 }

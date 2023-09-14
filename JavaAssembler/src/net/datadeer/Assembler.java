@@ -11,7 +11,7 @@ import static net.datadeer.Util.fetchLinesFromFile;
 public class Assembler {
 
     public static void main(String[] args) {
-        String name = "test_all";
+        String name = "primesieve";
         File filein = new File("asm/"+name+".asm");
 
         File c = Preprocessor.runCPreprocessor(filein);
@@ -25,7 +25,7 @@ public class Assembler {
         // Calculate label address offsets
         LabelManager lm = new LabelManager(commands);
 
-        System.out.printf("Label Manager:\n"+ lm);
+        System.out.println(lm);
 
         // Print output in a bunch of formats
         commandsPrint(lm, commands);

@@ -26,6 +26,12 @@ public class Macro extends Command {
                         "clr", "xori " + (lm.stringToNumber(a) % 16), "xori " + (lm.stringToNumber(a) / 16) % 16, "set RML",
                         "get RAT"
                 })),
+                new MacroTemplate("setjl", (lm, a) -> CommandGroup.create(new String[]{
+                        "set RAT",
+                        "clr", "xori " + (lm.stringToNumber(a) / 256) % 16, "xori " + (lm.stringToNumber(a) / 4096) % 16, "set RJH",
+                        "clr", "xori " + (lm.stringToNumber(a) % 16), "xori " + (lm.stringToNumber(a) / 16) % 16, "set RJL",
+                        "get RAT"
+                })),
                 new MacroTemplate("setsl", (lm, a) -> CommandGroup.create(new String[]{
                         "set RAT",
                         "clr", "xori " + (lm.stringToNumber(a) / 256) % 16, "xori " + (lm.stringToNumber(a) / 4096) % 16, "set RSH",

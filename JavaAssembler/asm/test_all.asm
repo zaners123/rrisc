@@ -56,9 +56,9 @@ set RML
 addi 1
 set RMH
 addi 1
-set RROML
+set RJL
 addi 1
-set RROMH
+set RJH
 addi 1
 set R8
 addi 1
@@ -74,8 +74,8 @@ get R6
 get R7
 get RML
 get RMH
-get RROML
-get RROMH
+get RJL
+get RJH
 get R8
 get R9
 
@@ -125,6 +125,11 @@ addi 1
 sal
 addi 1
 
+//setup for jump
+xor acc
+set RMH
+set RML  //mem=0
+
 xor acc
 xor acc
 
@@ -137,7 +142,7 @@ addi 1 		    // ACC=1
 jno             // never
 jco		        // cmp odd (false since cmp is 0)
 jcn             // cmp negative (false since cmp is 0)
-jcz             // cmp zero (false since it's 1)
+jcnz             // cmp not zero (false since it IS zero)
 jae		        // acc odd (false since acc is 1)
 jan             // acc negative (false since it's positive)
 //don't test NEWCON since it's floating
@@ -156,7 +161,7 @@ addi 0
 
 //loop until carry test
 xor acc
-setml loop
+setjl loop
 loop:
 addi 8
 jcf
@@ -166,7 +171,7 @@ xor acc
 addi 10
 set R3          //R3= bound
 
-setml loop10
+setjl loop10
 loop10:
 addi 1
 set R1

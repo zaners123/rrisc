@@ -8,7 +8,7 @@ class CommandFactory {
     public static final OPCODE[] CONDITION_OPCODES = new OPCODE[]{S,J};
 
     private static final boolean ALLOW_MACROS = true;
-    private static final boolean ALLOW_ANYTHING_CONDITIONALS = false;
+    private static final boolean ALLOW_ANYTHING_CONDITIONALS = true;
 
     enum OPCODE {
         ADD(0x0),ADDI(0x1),
@@ -48,15 +48,16 @@ class CommandFactory {
         R3(0x4),
         R4(0x5),
         R5(0x6),
-        R6(0x7),RSL(0x7), // No Hardware Stack, just a mnemonic
-        R7(0x8),RSH(0x8), // No Hardware Stack, just a mnemonic
+        R6(0x7),
 
-        RML(0x9),
-        RMH(0xA),
-        RROML(0xB),
-        RROMH(0xC),
-        R8(0xD),
-        R9(0xE),RAT(0xE);
+        RML(0x8),//memory/RAM
+        RMH(0x9),//memory/RAM
+        RJL(0xA),//jump/ROM
+        RJH(0xB),//jump/ROM
+        R7(0xC),
+        R8(0xD),RSL(0xD), // No Hardware Stack, just a mnemonic
+        R9(0xE),RSH(0xE), // No Hardware Stack, just a mnemonic
+        R10(0xF),RAT(0xF);
 
 
         private final Nibble nibble;
